@@ -45,8 +45,8 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
           .map((o) => TextEditingController(text: o.toString()))
           .toList();
       final answer = jsonDecode(widget.question!.answer);
-      if (_type == '单选') {
-        _singleChoiceAnswerIndex = answer as int;
+      if (_type == '单选' || _type == '判断') {
+        _singleChoiceAnswerIndex = answer == null ? 0 : answer as int;
       } else if (_type == '多选') {
         _multipleChoiceAnswers = (answer as List)
             .map((a) => a as bool)
@@ -101,7 +101,6 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
                         TextEditingController(text: '错误'),
                       ];
                       _multipleChoiceAnswers = [false, false];
-                      _singleChoiceAnswerIndex = null;
                     }
                   });
                 },
@@ -153,9 +152,10 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
                 controller: _optionControllers[index],
                 decoration: InputDecoration(labelText: '选项 ${index + 1}'),
                 validator: (value) => value!.isEmpty ? '选项不能为空' : null,
+                readOnly: _type == '判断',
               ),
             ),
-            if (_type == '单选')
+            if (_type == '单选' || _type == '判断')
               Radio<int>(
                 value: index,
                 groupValue: _singleChoiceAnswerIndex,
@@ -194,7 +194,8 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    if ((_type == '单选' && _singleChoiceAnswerIndex == null) ||
+    if (((_type == '单选' || _type == '判断') &&
+            _singleChoiceAnswerIndex == null) ||
         (_type == '多选' && !_multipleChoiceAnswers.contains(true))) {
       ScaffoldMessenger.of(
         context,
