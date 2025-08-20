@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>学习辅助</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+    body { font-family: 'Roboto', sans-serif; background: #f5f5f5; margin: 0; }
+    header {
+        background: #6200ea; color: white; padding: 16px;
+        font-size: 20px; display: flex; align-items: center; gap: 8px;
+    }
+    .container { padding: 16px; }
+    .list { background: white; border-radius: 8px; padding: 8px; }
+    .list-item {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px; border-bottom: 1px solid #eee;
+        cursor: pointer; transition: background 0.1s ease;
+    }
+    .list-item:hover { background: #f0f0f0; }
+    .material-icons { color: #6200ea; }
+</style>
+</head>
+<body>
+
+<header>
+    <span class="material-icons" onclick="history.back()" style="cursor:pointer;">arrow_back</span>
+    学习辅助
+</header>
+
+<div class="container">
+    <div class="list">
+        <div class="list-item"><span class="material-icons">error</span> 错题分类复习</div>
+        <div class="list-item"><span class="material-icons">description</span> 解析查看</div>
+        <div class="list-item"><span class="material-icons">label</span> 题目标签管理</div>
+        <div class="list-item"><span class="material-icons">notifications</span> 复习提醒</div>
+    </div>
+</div>
+
+</body>
+</html>

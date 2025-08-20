@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>答题软件原型</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+    body { font-family: 'Roboto', sans-serif; background: #f5f5f5; margin: 0; }
+    header {
+        background: #6200ea; color: white; padding: 16px;
+        font-size: 20px; display: flex; align-items: center; gap: 8px;
+    }
+    .container { display: flex; flex-wrap: wrap; padding: 16px; gap: 16px; }
+    .card {
+        background: white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        padding: 16px; flex: 1 1 calc(33% - 32px); min-width: 280px;
+        display: flex; align-items: center; gap: 12px; cursor: pointer;
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .material-icons { font-size: 36px; color: #6200ea; }
+    h3 { margin: 0; font-size: 18px; }
+</style>
+</head>
+<body>
+
+<header><span class="material-icons">quiz</span> 答题软件原型</header>
+
+<div class="container">
+    <div class="card" onclick="location.href='bank.html'">
+        <span class="material-icons">library_books</span>
+        <h3>题库管理</h3>
+    </div>
+    <div class="card" onclick="location.href='quiz.html'">
+        <span class="material-icons">assignment</span>
+        <h3>答题模式</h3>
+    </div>
+    <div class="card" onclick="location.href='study.html'">
+        <span class="material-icons">school</span>
+        <h3>学习辅助</h3>
+    </div>
+    <div class="card" onclick="location.href='stats.html'">
+        <span class="material-icons">bar_chart</span>
+        <h3>数据统计</h3>
+    </div>
+    <div class="card" onclick="location.href='settings.html'">
+        <span class="material-icons">settings</span>
+        <h3>设置</h3>
+    </div>
+</div>
+
+</body>
+</html>
