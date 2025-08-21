@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:quiz_flutter/providers/settings_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:quiz_flutter/models/models.dart';
 import 'package:quiz_flutter/services/database_helper.dart';
@@ -13,6 +14,7 @@ class QuizState {
   final int currentIndex;
   final bool quizFinished;
   final bool showAnswer;
+  final DateTime startTime;
 
   const QuizState({
     this.questions = const [],
@@ -20,12 +22,13 @@ class QuizState {
     this.currentIndex = 0,
     this.quizFinished = false,
     this.showAnswer = false,
+    required this.startTime,
   });
 
   Question? get currentQuestion =>
       questions.isNotEmpty && currentIndex < questions.length
-          ? questions[currentIndex]
-          : null;
+      ? questions[currentIndex]
+      : null;
 
   QuizState copyWith({
     List<Question>? questions,
@@ -40,6 +43,7 @@ class QuizState {
       currentIndex: currentIndex ?? this.currentIndex,
       quizFinished: quizFinished ?? this.quizFinished,
       showAnswer: showAnswer ?? this.showAnswer,
+      startTime: startTime,
     );
   }
 }
@@ -53,31 +57,36 @@ class QuizList extends _$QuizList {
   Future<QuizState> build({int? bankId, required String mode}) async {
     _mode = mode;
     final questions = await _loadQuestions(bankId: bankId, mode: mode);
-    return QuizState(questions: questions);
+    final systemSettings = ref.read(settingsProvider);
+    return QuizState(
+      questions: questions,
+      showAnswer: systemSettings['showAnswer'],
+      startTime: DateTime.now(),
+    );
   }
 
   Future<List<Question>> _loadQuestions({
     int? bankId,
     required String mode,
   }) async {
-    if (mode == 'favorites') {
-      final favoriteIds = (await _dbHelper.getAllFavorites())
-          .map((f) => f.questionId)
-          .toList();
-      if (favoriteIds.isNotEmpty) {
-        return _dbHelper.getQuestionsByIds(favoriteIds);
-      }
-      return [];
-    } else if (bankId != null) {
-      return _dbHelper.getQuestionsByBank(bankId);
-    }
-    return [];
+    return _dbHelper.getQuestionsWithFav(
+      bankId: bankId,
+      onlyFav: mode == 'favorites',
+    );
   }
 
   void answerQuestion(int questionId, dynamic answer) {
     final newAnswers = Map<int, dynamic>.from(state.value!.userAnswers);
     newAnswers[questionId] = answer;
     state = AsyncValue.data(state.value!.copyWith(userAnswers: newAnswers));
+  }
+
+  void preQuestion() {
+    if (state.value!.currentIndex > 0) {
+      state = AsyncValue.data(
+        state.value!.copyWith(currentIndex: state.value!.currentIndex - 1),
+      );
+    }
   }
 
   void nextQuestion() {
@@ -87,6 +96,29 @@ class QuizList extends _$QuizList {
       );
     } else {
       finishQuiz();
+    }
+  }
+
+  Future<void> toggleCurrentFav() async {
+    final currentQuestion = state.value?.currentQuestion;
+    if (currentQuestion != null) {
+      final isFavorite = !currentQuestion.isFavorite;
+      state = AsyncValue.data(
+        state.value!.copyWith(
+          questions: state.value!.questions.map((question) {
+            return question.id == currentQuestion.id
+                ? question.copyWith(isFavorite: isFavorite)
+                : question;
+          }).toList(),
+        ),
+      );
+      if (isFavorite) {
+        await _dbHelper.insertFavorite(
+          Favorite(questionId: currentQuestion.id!),
+        );
+      } else {
+        await _dbHelper.deleteFavorite(currentQuestion.id!);
+      }
     }
   }
 
@@ -136,6 +168,18 @@ class QuizList extends _$QuizList {
       return false;
     }
     return false;
+  }
+
+  bool isComplete() {
+    final currentState = state.value;
+    if (currentState == null) return false;
+
+    for (var question in currentState.questions) {
+      if (!currentState.userAnswers.containsKey(question.id)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   int getScore() {

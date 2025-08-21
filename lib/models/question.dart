@@ -18,6 +18,10 @@ abstract class Question with _$Question {
     @TimestampSerializer()
     @JsonKey(name: 'created_at')
     required DateTime createdAt,
+    @JsonKey(name: 'is_favorite', includeToJson: false)
+    @BooleanSerializer()
+    @Default(false)
+    bool isFavorite,
   }) = _Question;
 
   factory Question.fromJson(Map<String, dynamic> json) =>

@@ -13,61 +13,72 @@ import 'package:quiz_flutter/screens/study/study_screen.dart';
 
 final GoRouter router = GoRouter(
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
     GoRoute(
-      path: '/bank',
-      builder: (context, state) => const BankScreen(),
+      path: '/',
+      builder: (context, state) => const HomeScreen(),
       routes: [
         GoRoute(
-          path: ':bankId/questions',
-          builder: (context, state) {
-            final bankId = int.parse(state.pathParameters['bankId']!);
-            return QuestionListScreen(bankId: bankId);
-          },
+          path: 'bank',
+          builder: (context, state) => const BankScreen(),
           routes: [
             GoRoute(
-              path: 'add',
+              path: ':bankId/questions',
               builder: (context, state) {
                 final bankId = int.parse(state.pathParameters['bankId']!);
-                return AddEditQuestionScreen(bankId: bankId);
+                return QuestionListScreen(bankId: bankId);
               },
+              routes: [
+                GoRoute(
+                  path: 'add',
+                  builder: (context, state) {
+                    final bankId = int.parse(state.pathParameters['bankId']!);
+                    return AddEditQuestionScreen(bankId: bankId);
+                  },
+                ),
+                GoRoute(
+                  path: 'edit',
+                  builder: (context, state) {
+                    final question = state.extra as Question;
+                    return AddEditQuestionScreen(
+                      question: question,
+                      bankId: question.bankId,
+                    );
+                  },
+                ),
+              ],
             ),
+
+            // ],
+            // ),
+          ],
+        ),
+        GoRoute(
+          path: 'quiz',
+          builder: (context, state) => const QuizScreen(),
+          routes: [
             GoRoute(
-              path: 'edit',
+              path: 'taking/:mode/:bankId',
               builder: (context, state) {
-                final question = state.extra as Question;
-                return AddEditQuestionScreen(
-                  question: question,
-                  bankId: question.bankId,
-                );
+                final bankId = int.parse(state.pathParameters['bankId']!);
+                final mode = state.pathParameters['mode'] as String;
+                return QuizTakingScreen(bankId: bankId, mode: mode);
               },
             ),
           ],
         ),
-
-        // ],
-        // ),
-      ],
-    ),
-    GoRoute(
-      path: '/quiz',
-      builder: (context, state) => const QuizScreen(),
-      routes: [
         GoRoute(
-          path: 'taking/:mode/:bankId',
-          builder: (context, state) {
-            final bankId = int.parse(state.pathParameters['bankId']!);
-            final mode = state.pathParameters['mode'] as String ?? 'practice';
-            return QuizTakingScreen(bankId: bankId, mode: mode);
-          },
+          path: 'study',
+          builder: (context, state) => const StudyScreen(),
+        ),
+        GoRoute(
+          path: 'stats',
+          builder: (context, state) => const StatsScreen(),
+        ),
+        GoRoute(
+          path: 'settings',
+          builder: (context, state) => const SettingsScreen(),
         ),
       ],
-    ),
-    GoRoute(path: '/study', builder: (context, state) => const StudyScreen()),
-    GoRoute(path: '/stats', builder: (context, state) => const StatsScreen()),
-    GoRoute(
-      path: '/settings',
-      builder: (context, state) => const SettingsScreen(),
     ),
   ],
   errorBuilder: (context, state) => const PageNoFoundScreen(),

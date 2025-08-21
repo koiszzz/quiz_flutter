@@ -8,7 +8,7 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(settingsProvider);
+    final systemSettings = ref.watch(settingsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -24,7 +24,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             title: const Text('主题模式'),
             trailing: DropdownButton<ThemeMode>(
-              value: themeMode,
+              value: systemSettings['theme'],
               items: const [
                 DropdownMenuItem(value: ThemeMode.system, child: Text('跟随系统')),
                 DropdownMenuItem(value: ThemeMode.light, child: Text('亮色模式')),
@@ -34,6 +34,15 @@ class SettingsScreen extends ConsumerWidget {
                 if (newMode != null) {
                   ref.read(settingsProvider.notifier).setThemeMode(newMode);
                 }
+              },
+            ),
+          ),
+          ListTile(
+            title: const Text('练习模式是否显示答案'),
+            trailing: Switch(
+              value: systemSettings['showAnswer'],
+              onChanged: (value) {
+                ref.read(settingsProvider.notifier).setShowAnswer(value);
               },
             ),
           ),

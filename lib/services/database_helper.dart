@@ -191,6 +191,25 @@ class DatabaseHelper {
     });
   }
 
+  Future<List<Question>> getQuestionsWithFav({
+    int? bankId,
+    bool onlyFav = false,
+  }) async {
+    final db = await instance.database;
+    final maps = await db.rawQuery(
+      '''
+      SELECT q.*, f.$columnFavoriteId IS NOT NULL AS is_favorite
+      FROM $tableQuestions q
+      LEFT JOIN $tableFavorites f ON q.$columnQuestionId = f.$columnFavoriteQuestionId
+      WHERE q.$columnQuestionBankId = ? ${onlyFav ? 'AND f.$columnFavoriteId IS NOT NULL' : ''}
+    ''',
+      [bankId],
+    );
+    return List.generate(maps.length, (i) {
+      return Question.fromJson(maps[i]);
+    });
+  }
+
   // Record CRUD
   Future<int> insertRecord(QuizRecord record) async {
     final db = await instance.database;

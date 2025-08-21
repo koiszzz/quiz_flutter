@@ -95,138 +95,163 @@ class _BankScreenState extends ConsumerState<BankScreen> {
 
     if (result == null) return;
 
-    final file = File(result.files.single.path!);
-    final bytes = await file.readAsBytes();
-    final excel = Excel.decodeBytes(bytes);
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(
+          child: Column(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('正在导入，请稍候...'),
+            ],
+          ),
+        );
+      },
+    );
 
-    final sheet = excel.tables[excel.tables.keys.first];
-    if (sheet == null) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(const SnackBar(content: Text('Excel文件为空')));
-      }
-      return;
-    }
+    try {
+      final file = File(result.files.single.path!);
+      final bytes = await file.readAsBytes();
+      final excel = Excel.decodeBytes(bytes);
 
-    final bankName = p.basenameWithoutExtension(file.path);
-    final newBank = QuestionBank(name: bankName, createdAt: DateTime.now());
-    final bankId = await ref.read(bankListProvider.notifier).addBank(newBank);
-
-    // 获取表头
-    final headerRow = sheet.rows.first;
-    final header = headerRow
-        .map((cell) => cell?.value.toString().trim())
-        .toList();
-
-    final contentIndex = header.indexOf('试题题干（必填）');
-    final typeIndex = header.indexOf('试题类型');
-    final answerIndex = header.indexOf('答案（必填）');
-    // "解析" 和 "标签" 是可选的
-    final explanationIndex = header.indexOf('试题解析');
-    final tagsIndex = header.indexOf('标签');
-
-    if (contentIndex == -1 || typeIndex == -1 || answerIndex == -1) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            const SnackBar(
-              content: Text('Excel格式错误，必须包含 "试题题干（必填）", "试题类型", "答案（必填）"'),
-            ),
-          );
-      }
-      return;
-    }
-
-    // 选项列是答案之后的所有列
-    final optionIndices = header
-        .asMap()
-        .entries
-        .where((entry) => entry.value?.contains('选项') == true)
-        .map((entry) => entry.key)
-        .toList();
-
-    for (var i = 1; i < sheet.rows.length; i++) {
-      final row = sheet.rows[i];
-      if (row.every((cell) => cell == null || cell.value.toString().isEmpty)) {
-        continue;
+      final sheet = excel.tables[excel.tables.keys.first];
+      if (sheet == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(const SnackBar(content: Text('Excel文件为空')));
+        }
+        return;
       }
 
-      final content = row[contentIndex]?.value?.toString() ?? '';
-      final type = row[typeIndex]?.value?.toString() ?? '';
-      final rawAnswer = row[answerIndex]?.value?.toString() ?? '';
-      final explanation = explanationIndex != -1
-          ? row[explanationIndex]?.value?.toString() ?? ''
-          : '';
-      final tags =
-          tagsIndex != -1 ? row[tagsIndex]?.value?.toString() ?? '' : '';
+      final bankName = p.basenameWithoutExtension(file.path);
+      final newBank = QuestionBank(name: bankName, createdAt: DateTime.now());
+      final bankId = await ref.read(bankListProvider.notifier).addBank(newBank);
 
-      List<String> options = [];
-      String encodedAnswer;
+      // 获取表头
+      final headerRow = sheet.rows.first;
+      final header = headerRow
+          .map((cell) => cell?.value.toString().trim())
+          .toList();
 
-      switch (type) {
-        case '单选':
-          options = optionIndices
-              .map(
-                (index) => index < row.length
-                    ? row[index]?.value?.toString() ?? ''
-                    : '',
-              )
-              .where((o) => o.isNotEmpty)
-              .toList();
-          final answerOptionIndex =
-              rawAnswer.toUpperCase().codeUnitAt(0) - 'A'.codeUnitAt(0);
-          encodedAnswer = jsonEncode(answerOptionIndex);
-          break;
-        case '多选':
-          options = optionIndices
-              .map(
-                (index) => index < row.length
-                    ? row[index]?.value?.toString() ?? ''
-                    : '',
-              )
-              .where((o) => o.isNotEmpty)
-              .toList();
-          final answerChars = rawAnswer
-              .toUpperCase()
-              .replaceAll(RegExp(r'[^A-Z]'), '')
-              .split('');
-          List<bool> answers = List.generate(options.length, (_) => false);
-          for (var char in answerChars) {
-            final index = char.codeUnitAt(0) - 'A'.codeUnitAt(0);
-            if (index < answers.length) {
-              answers[index] = true;
-            }
-          }
-          encodedAnswer = jsonEncode(answers);
-          break;
-        case '判断':
-          options = ['正确', '错误'];
-          encodedAnswer = jsonEncode(rawAnswer == '正确' ? 0 : 1);
-          break;
-        default:
-          // 不支持的类型，跳过
+      final contentIndex = header.indexOf('试题题干（必填）');
+      final typeIndex = header.indexOf('试题类型');
+      final answerIndex = header.indexOf('答案（必填）');
+      // "解析" 和 "标签" 是可选的
+      final explanationIndex = header.indexOf('试题解析');
+      final tagsIndex = header.indexOf('标签');
+
+      if (contentIndex == -1 || typeIndex == -1 || answerIndex == -1) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(
+                content: Text('Excel格式错误，必须包含 "试题题干（必填）", "试题类型", "答案（必填）"'),
+              ),
+            );
+        }
+        return;
+      }
+
+      // 选项列是答案之后的所有列
+      final optionIndices = header
+          .asMap()
+          .entries
+          .where((entry) => entry.value?.contains('选项') == true)
+          .map((entry) => entry.key)
+          .toList();
+
+      for (var i = 1; i < sheet.rows.length; i++) {
+        final row = sheet.rows[i];
+        if (row.every(
+          (cell) => cell == null || cell.value.toString().isEmpty,
+        )) {
           continue;
+        }
+
+        final content = row[contentIndex]?.value?.toString() ?? '';
+        final type = row[typeIndex]?.value?.toString() ?? '';
+        final rawAnswer = row[answerIndex]?.value?.toString() ?? '';
+        final explanation = explanationIndex != -1
+            ? row[explanationIndex]?.value?.toString() ?? ''
+            : '';
+        final tags = tagsIndex != -1
+            ? row[tagsIndex]?.value?.toString() ?? ''
+            : '';
+
+        List<String> options = [];
+        String encodedAnswer;
+
+        switch (type) {
+          case '单选':
+            options = optionIndices
+                .map(
+                  (index) => index < row.length
+                      ? row[index]?.value?.toString() ?? ''
+                      : '',
+                )
+                .where((o) => o.isNotEmpty)
+                .toList();
+            final answerOptionIndex =
+                rawAnswer.toUpperCase().codeUnitAt(0) - 'A'.codeUnitAt(0);
+            encodedAnswer = jsonEncode(answerOptionIndex);
+            break;
+          case '多选':
+            options = optionIndices
+                .map(
+                  (index) => index < row.length
+                      ? row[index]?.value?.toString() ?? ''
+                      : '',
+                )
+                .where((o) => o.isNotEmpty)
+                .toList();
+            final answerChars = rawAnswer
+                .toUpperCase()
+                .replaceAll(RegExp(r'[^A-Z]'), '')
+                .split('');
+            List<bool> answers = List.generate(options.length, (_) => false);
+            for (var char in answerChars) {
+              final index = char.codeUnitAt(0) - 'A'.codeUnitAt(0);
+              if (index < answers.length) {
+                answers[index] = true;
+              }
+            }
+            encodedAnswer = jsonEncode(answers);
+            break;
+          case '判断':
+            options = ['正确', '错误'];
+            encodedAnswer = jsonEncode(rawAnswer == '正确' ? 0 : 1);
+            break;
+          default:
+            // 不支持的类型，跳过
+            continue;
+        }
+
+        final question = Question(
+          content: content,
+          type: type,
+          options: jsonEncode(options),
+          answer: encodedAnswer,
+          explanation: explanation,
+          tags: tags,
+          bankId: bankId,
+          createdAt: DateTime.now(),
+        );
+        await ref.read(bankListProvider.notifier).addQuestion(question);
       }
 
-      final question = Question(
-        content: content,
-        type: type,
-        options: jsonEncode(options),
-        answer: encodedAnswer,
-        explanation: explanation,
-        tags: tags,
-        bankId: bankId,
-        createdAt: DateTime.now(),
-      );
-      await ref.read(bankListProvider.notifier).addQuestion(question);
-    }
-
-    if (context.mounted) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(const SnackBar(content: Text('导入成功')));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(const SnackBar(content: Text('导入成功')));
+      }
+    } finally {
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
     }
   }
 

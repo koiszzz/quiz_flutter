@@ -9,7 +9,8 @@ part of 'settings_provider.dart';
 @ProviderFor(Settings)
 const settingsProvider = SettingsProvider._();
 
-final class SettingsProvider extends $NotifierProvider<Settings, ThemeMode> {
+final class SettingsProvider
+    extends $NotifierProvider<Settings, Map<String, dynamic>> {
   const SettingsProvider._()
     : super(
         from: null,
@@ -29,28 +30,28 @@ final class SettingsProvider extends $NotifierProvider<Settings, ThemeMode> {
   Settings create() => Settings();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ThemeMode value) {
+  Override overrideWithValue(Map<String, dynamic> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<ThemeMode>(value),
+      providerOverride: $SyncValueProvider<Map<String, dynamic>>(value),
     );
   }
 }
 
-String _$settingsHash() => r'15123ffa66852039cf0790a27e4708bb245ec9d3';
+String _$settingsHash() => r'81d0b83e2034e8381bbc0ed0eb1c18abc479a8e4';
 
-abstract class _$Settings extends $Notifier<ThemeMode> {
-  ThemeMode build();
+abstract class _$Settings extends $Notifier<Map<String, dynamic>> {
+  Map<String, dynamic> build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<ThemeMode, ThemeMode>;
+    final ref = this.ref as $Ref<Map<String, dynamic>, Map<String, dynamic>>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<ThemeMode, ThemeMode>,
-              ThemeMode,
+              AnyNotifier<Map<String, dynamic>, Map<String, dynamic>>,
+              Map<String, dynamic>,
               Object?,
               Object?
             >;

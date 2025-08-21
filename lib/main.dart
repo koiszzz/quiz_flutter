@@ -13,7 +13,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the settingsProvider to get the current themeMode.
-    final themeMode = ref.watch(settingsProvider);
+    final systemSettings = ref.watch(settingsProvider);
 
     return MaterialApp.router(
       title: 'Quiz App',
@@ -21,6 +21,7 @@ class MyApp extends ConsumerWidget {
         brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
+          error: Colors.deepOrangeAccent[400],
           brightness: Brightness.light,
         ),
         useMaterial3: true,
@@ -28,13 +29,14 @@ class MyApp extends ConsumerWidget {
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
+          seedColor: Colors.purpleAccent,
           brightness: Brightness.dark,
+          error: Colors.orangeAccent[400],
         ),
         iconTheme: const IconThemeData(color: Colors.white70),
         useMaterial3: true,
       ),
-      themeMode: themeMode,
+      themeMode: systemSettings['theme'],
       routerConfig: router,
     );
   }

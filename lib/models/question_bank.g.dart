@@ -11,7 +11,7 @@ _QuestionBank _$QuestionBankFromJson(Map<String, dynamic> json) =>
       id: (json['id'] as num?)?.toInt(),
       name: json['name'] as String,
       description: json['description'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: const TimestampSerializer().fromJson(json['created_at']),
     );
 
 Map<String, dynamic> _$QuestionBankToJson(_QuestionBank instance) =>
@@ -19,5 +19,5 @@ Map<String, dynamic> _$QuestionBankToJson(_QuestionBank instance) =>
       'id': instance.id,
       'name': instance.name,
       'description': instance.description,
-      'created_at': instance.createdAt.toIso8601String(),
+      'created_at': const TimestampSerializer().toJson(instance.createdAt),
     };

@@ -36,7 +36,11 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(icon, size: 48.0, color: Theme.of(context).iconTheme.color),
+            Icon(
+              icon,
+              size: 48.0,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             const SizedBox(height: 8.0),
             Text(title, style: Theme.of(context).textTheme.titleMedium),
           ],

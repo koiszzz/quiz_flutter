@@ -7,23 +7,31 @@ part 'settings_provider.g.dart';
 @riverpod
 class Settings extends _$Settings {
   static const String _themeKey = 'theme_mode';
+  static const String _showAnswerKey = 'show_answer';
 
   @override
-  ThemeMode build() {
-    _loadThemeMode();
+  Map<String, dynamic> build() {
+    _loadData();
     // Return the initial state synchronously
-    return ThemeMode.system;
+    return {'theme': ThemeMode.system, 'showAnswer': false};
   }
 
-  Future<void> _loadThemeMode() async {
+  Future<void> _loadData() async {
     final prefs = await SharedPreferences.getInstance();
     final themeIndex = prefs.getInt(_themeKey) ?? ThemeMode.system.index;
-    state = ThemeMode.values[themeIndex];
+    final showAnswer = prefs.getBool(_showAnswerKey) ?? false;
+    state = {'theme': ThemeMode.values[themeIndex], 'showAnswer': showAnswer};
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
-    state = mode;
+    state = {'theme': mode, 'showAnswer': state['showAnswer']};
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_themeKey, mode.index);
+  }
+
+  Future<void> setShowAnswer(bool show) async {
+    state = {'theme': state['theme'], 'showAnswer': show};
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_showAnswerKey, show);
   }
 }

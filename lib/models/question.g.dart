@@ -16,6 +16,9 @@ _Question _$QuestionFromJson(Map<String, dynamic> json) => _Question(
   tags: json['tags'] as String?,
   bankId: (json['bank_id'] as num).toInt(),
   createdAt: const TimestampSerializer().fromJson(json['created_at']),
+  isFavorite: json['is_favorite'] == null
+      ? false
+      : const BooleanSerializer().fromJson(json['is_favorite']),
 );
 
 Map<String, dynamic> _$QuestionToJson(_Question instance) => <String, dynamic>{

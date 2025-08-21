@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$QuestionBank {
 
- int? get id; String get name; String? get description;@JsonKey(name: 'created_at') DateTime get createdAt;
+ int? get id; String get name; String? get description;@JsonKey(name: 'created_at')@TimestampSerializer() DateTime get createdAt;
 /// Create a copy of QuestionBank
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $QuestionBankCopyWith<$Res>  {
   factory $QuestionBankCopyWith(QuestionBank value, $Res Function(QuestionBank) _then) = _$QuestionBankCopyWithImpl;
 @useResult
 $Res call({
- int? id, String name, String? description,@JsonKey(name: 'created_at') DateTime createdAt
+ int? id, String name, String? description,@JsonKey(name: 'created_at')@TimestampSerializer() DateTime createdAt
 });
 
 
@@ -156,7 +156,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String name,  String? description, @JsonKey(name: 'created_at')  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String name,  String? description, @JsonKey(name: 'created_at')@TimestampSerializer()  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _QuestionBank() when $default != null:
 return $default(_that.id,_that.name,_that.description,_that.createdAt);case _:
@@ -177,7 +177,7 @@ return $default(_that.id,_that.name,_that.description,_that.createdAt);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String name,  String? description, @JsonKey(name: 'created_at')  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String name,  String? description, @JsonKey(name: 'created_at')@TimestampSerializer()  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _QuestionBank():
 return $default(_that.id,_that.name,_that.description,_that.createdAt);case _:
@@ -197,7 +197,7 @@ return $default(_that.id,_that.name,_that.description,_that.createdAt);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String name,  String? description, @JsonKey(name: 'created_at')  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String name,  String? description, @JsonKey(name: 'created_at')@TimestampSerializer()  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _QuestionBank() when $default != null:
 return $default(_that.id,_that.name,_that.description,_that.createdAt);case _:
@@ -212,13 +212,13 @@ return $default(_that.id,_that.name,_that.description,_that.createdAt);case _:
 @JsonSerializable()
 
 class _QuestionBank implements QuestionBank {
-  const _QuestionBank({this.id, required this.name, this.description, @JsonKey(name: 'created_at') required this.createdAt});
+  const _QuestionBank({this.id, required this.name, this.description, @JsonKey(name: 'created_at')@TimestampSerializer() required this.createdAt});
   factory _QuestionBank.fromJson(Map<String, dynamic> json) => _$QuestionBankFromJson(json);
 
 @override final  int? id;
 @override final  String name;
 @override final  String? description;
-@override@JsonKey(name: 'created_at') final  DateTime createdAt;
+@override@JsonKey(name: 'created_at')@TimestampSerializer() final  DateTime createdAt;
 
 /// Create a copy of QuestionBank
 /// with the given fields replaced by the non-null parameter values.
@@ -253,7 +253,7 @@ abstract mixin class _$QuestionBankCopyWith<$Res> implements $QuestionBankCopyWi
   factory _$QuestionBankCopyWith(_QuestionBank value, $Res Function(_QuestionBank) _then) = __$QuestionBankCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, String name, String? description,@JsonKey(name: 'created_at') DateTime createdAt
+ int? id, String name, String? description,@JsonKey(name: 'created_at')@TimestampSerializer() DateTime createdAt
 });
 
 

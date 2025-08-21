@@ -17,7 +17,7 @@ mixin _$Question {
 
  int? get id; String get content; String get type; String get options;// JSON encoded string
  String get answer; String? get explanation; String? get tags;// Comma-separated
-@JsonKey(name: 'bank_id') int get bankId;@TimestampSerializer()@JsonKey(name: 'created_at') DateTime get createdAt;
+@JsonKey(name: 'bank_id') int get bankId;@TimestampSerializer()@JsonKey(name: 'created_at') DateTime get createdAt;@JsonKey(name: 'is_favorite', includeToJson: false)@BooleanSerializer() bool get isFavorite;
 /// Create a copy of Question
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,16 +30,16 @@ $QuestionCopyWith<Question> get copyWith => _$QuestionCopyWithImpl<Question>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Question&&(identical(other.id, id) || other.id == id)&&(identical(other.content, content) || other.content == content)&&(identical(other.type, type) || other.type == type)&&(identical(other.options, options) || other.options == options)&&(identical(other.answer, answer) || other.answer == answer)&&(identical(other.explanation, explanation) || other.explanation == explanation)&&(identical(other.tags, tags) || other.tags == tags)&&(identical(other.bankId, bankId) || other.bankId == bankId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Question&&(identical(other.id, id) || other.id == id)&&(identical(other.content, content) || other.content == content)&&(identical(other.type, type) || other.type == type)&&(identical(other.options, options) || other.options == options)&&(identical(other.answer, answer) || other.answer == answer)&&(identical(other.explanation, explanation) || other.explanation == explanation)&&(identical(other.tags, tags) || other.tags == tags)&&(identical(other.bankId, bankId) || other.bankId == bankId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,content,type,options,answer,explanation,tags,bankId,createdAt);
+int get hashCode => Object.hash(runtimeType,id,content,type,options,answer,explanation,tags,bankId,createdAt,isFavorite);
 
 @override
 String toString() {
-  return 'Question(id: $id, content: $content, type: $type, options: $options, answer: $answer, explanation: $explanation, tags: $tags, bankId: $bankId, createdAt: $createdAt)';
+  return 'Question(id: $id, content: $content, type: $type, options: $options, answer: $answer, explanation: $explanation, tags: $tags, bankId: $bankId, createdAt: $createdAt, isFavorite: $isFavorite)';
 }
 
 
@@ -50,7 +50,7 @@ abstract mixin class $QuestionCopyWith<$Res>  {
   factory $QuestionCopyWith(Question value, $Res Function(Question) _then) = _$QuestionCopyWithImpl;
 @useResult
 $Res call({
- int? id, String content, String type, String options, String answer, String? explanation, String? tags,@JsonKey(name: 'bank_id') int bankId,@TimestampSerializer()@JsonKey(name: 'created_at') DateTime createdAt
+ int? id, String content, String type, String options, String answer, String? explanation, String? tags,@JsonKey(name: 'bank_id') int bankId,@TimestampSerializer()@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'is_favorite', includeToJson: false)@BooleanSerializer() bool isFavorite
 });
 
 
@@ -67,7 +67,7 @@ class _$QuestionCopyWithImpl<$Res>
 
 /// Create a copy of Question
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? content = null,Object? type = null,Object? options = null,Object? answer = null,Object? explanation = freezed,Object? tags = freezed,Object? bankId = null,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? content = null,Object? type = null,Object? options = null,Object? answer = null,Object? explanation = freezed,Object? tags = freezed,Object? bankId = null,Object? createdAt = null,Object? isFavorite = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,content: null == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
@@ -78,7 +78,8 @@ as String,explanation: freezed == explanation ? _self.explanation : explanation 
 as String?,tags: freezed == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
 as String?,bankId: null == bankId ? _self.bankId : bankId // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -163,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String content,  String type,  String options,  String answer,  String? explanation,  String? tags, @JsonKey(name: 'bank_id')  int bankId, @TimestampSerializer()@JsonKey(name: 'created_at')  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String content,  String type,  String options,  String answer,  String? explanation,  String? tags, @JsonKey(name: 'bank_id')  int bankId, @TimestampSerializer()@JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'is_favorite', includeToJson: false)@BooleanSerializer()  bool isFavorite)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Question() when $default != null:
-return $default(_that.id,_that.content,_that.type,_that.options,_that.answer,_that.explanation,_that.tags,_that.bankId,_that.createdAt);case _:
+return $default(_that.id,_that.content,_that.type,_that.options,_that.answer,_that.explanation,_that.tags,_that.bankId,_that.createdAt,_that.isFavorite);case _:
   return orElse();
 
 }
@@ -184,10 +185,10 @@ return $default(_that.id,_that.content,_that.type,_that.options,_that.answer,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String content,  String type,  String options,  String answer,  String? explanation,  String? tags, @JsonKey(name: 'bank_id')  int bankId, @TimestampSerializer()@JsonKey(name: 'created_at')  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String content,  String type,  String options,  String answer,  String? explanation,  String? tags, @JsonKey(name: 'bank_id')  int bankId, @TimestampSerializer()@JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'is_favorite', includeToJson: false)@BooleanSerializer()  bool isFavorite)  $default,) {final _that = this;
 switch (_that) {
 case _Question():
-return $default(_that.id,_that.content,_that.type,_that.options,_that.answer,_that.explanation,_that.tags,_that.bankId,_that.createdAt);case _:
+return $default(_that.id,_that.content,_that.type,_that.options,_that.answer,_that.explanation,_that.tags,_that.bankId,_that.createdAt,_that.isFavorite);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +205,10 @@ return $default(_that.id,_that.content,_that.type,_that.options,_that.answer,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String content,  String type,  String options,  String answer,  String? explanation,  String? tags, @JsonKey(name: 'bank_id')  int bankId, @TimestampSerializer()@JsonKey(name: 'created_at')  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String content,  String type,  String options,  String answer,  String? explanation,  String? tags, @JsonKey(name: 'bank_id')  int bankId, @TimestampSerializer()@JsonKey(name: 'created_at')  DateTime createdAt, @JsonKey(name: 'is_favorite', includeToJson: false)@BooleanSerializer()  bool isFavorite)?  $default,) {final _that = this;
 switch (_that) {
 case _Question() when $default != null:
-return $default(_that.id,_that.content,_that.type,_that.options,_that.answer,_that.explanation,_that.tags,_that.bankId,_that.createdAt);case _:
+return $default(_that.id,_that.content,_that.type,_that.options,_that.answer,_that.explanation,_that.tags,_that.bankId,_that.createdAt,_that.isFavorite);case _:
   return null;
 
 }
@@ -219,7 +220,7 @@ return $default(_that.id,_that.content,_that.type,_that.options,_that.answer,_th
 @JsonSerializable()
 
 class _Question implements Question {
-   _Question({this.id, required this.content, required this.type, required this.options, required this.answer, this.explanation, this.tags, @JsonKey(name: 'bank_id') required this.bankId, @TimestampSerializer()@JsonKey(name: 'created_at') required this.createdAt});
+   _Question({this.id, required this.content, required this.type, required this.options, required this.answer, this.explanation, this.tags, @JsonKey(name: 'bank_id') required this.bankId, @TimestampSerializer()@JsonKey(name: 'created_at') required this.createdAt, @JsonKey(name: 'is_favorite', includeToJson: false)@BooleanSerializer() this.isFavorite = false});
   factory _Question.fromJson(Map<String, dynamic> json) => _$QuestionFromJson(json);
 
 @override final  int? id;
@@ -233,6 +234,7 @@ class _Question implements Question {
 // Comma-separated
 @override@JsonKey(name: 'bank_id') final  int bankId;
 @override@TimestampSerializer()@JsonKey(name: 'created_at') final  DateTime createdAt;
+@override@JsonKey(name: 'is_favorite', includeToJson: false)@BooleanSerializer() final  bool isFavorite;
 
 /// Create a copy of Question
 /// with the given fields replaced by the non-null parameter values.
@@ -247,16 +249,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Question&&(identical(other.id, id) || other.id == id)&&(identical(other.content, content) || other.content == content)&&(identical(other.type, type) || other.type == type)&&(identical(other.options, options) || other.options == options)&&(identical(other.answer, answer) || other.answer == answer)&&(identical(other.explanation, explanation) || other.explanation == explanation)&&(identical(other.tags, tags) || other.tags == tags)&&(identical(other.bankId, bankId) || other.bankId == bankId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Question&&(identical(other.id, id) || other.id == id)&&(identical(other.content, content) || other.content == content)&&(identical(other.type, type) || other.type == type)&&(identical(other.options, options) || other.options == options)&&(identical(other.answer, answer) || other.answer == answer)&&(identical(other.explanation, explanation) || other.explanation == explanation)&&(identical(other.tags, tags) || other.tags == tags)&&(identical(other.bankId, bankId) || other.bankId == bankId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,content,type,options,answer,explanation,tags,bankId,createdAt);
+int get hashCode => Object.hash(runtimeType,id,content,type,options,answer,explanation,tags,bankId,createdAt,isFavorite);
 
 @override
 String toString() {
-  return 'Question(id: $id, content: $content, type: $type, options: $options, answer: $answer, explanation: $explanation, tags: $tags, bankId: $bankId, createdAt: $createdAt)';
+  return 'Question(id: $id, content: $content, type: $type, options: $options, answer: $answer, explanation: $explanation, tags: $tags, bankId: $bankId, createdAt: $createdAt, isFavorite: $isFavorite)';
 }
 
 
@@ -267,7 +269,7 @@ abstract mixin class _$QuestionCopyWith<$Res> implements $QuestionCopyWith<$Res>
   factory _$QuestionCopyWith(_Question value, $Res Function(_Question) _then) = __$QuestionCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, String content, String type, String options, String answer, String? explanation, String? tags,@JsonKey(name: 'bank_id') int bankId,@TimestampSerializer()@JsonKey(name: 'created_at') DateTime createdAt
+ int? id, String content, String type, String options, String answer, String? explanation, String? tags,@JsonKey(name: 'bank_id') int bankId,@TimestampSerializer()@JsonKey(name: 'created_at') DateTime createdAt,@JsonKey(name: 'is_favorite', includeToJson: false)@BooleanSerializer() bool isFavorite
 });
 
 
@@ -284,7 +286,7 @@ class __$QuestionCopyWithImpl<$Res>
 
 /// Create a copy of Question
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? content = null,Object? type = null,Object? options = null,Object? answer = null,Object? explanation = freezed,Object? tags = freezed,Object? bankId = null,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? content = null,Object? type = null,Object? options = null,Object? answer = null,Object? explanation = freezed,Object? tags = freezed,Object? bankId = null,Object? createdAt = null,Object? isFavorite = null,}) {
   return _then(_Question(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,content: null == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
@@ -295,7 +297,8 @@ as String,explanation: freezed == explanation ? _self.explanation : explanation 
 as String?,tags: freezed == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
 as String?,bankId: null == bankId ? _self.bankId : bankId // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
