@@ -12,30 +12,34 @@ class QuizState {
   final Map<int, dynamic> userAnswers;
   final int currentIndex;
   final bool quizFinished;
+  final bool showAnswer;
 
   const QuizState({
     this.questions = const [],
     this.userAnswers = const {},
     this.currentIndex = 0,
     this.quizFinished = false,
+    this.showAnswer = false,
   });
 
   Question? get currentQuestion =>
       questions.isNotEmpty && currentIndex < questions.length
-      ? questions[currentIndex]
-      : null;
+          ? questions[currentIndex]
+          : null;
 
   QuizState copyWith({
     List<Question>? questions,
     Map<int, dynamic>? userAnswers,
     int? currentIndex,
     bool? quizFinished,
+    bool? showAnswer,
   }) {
     return QuizState(
       questions: questions ?? this.questions,
       userAnswers: userAnswers ?? this.userAnswers,
       currentIndex: currentIndex ?? this.currentIndex,
       quizFinished: quizFinished ?? this.quizFinished,
+      showAnswer: showAnswer ?? this.showAnswer,
     );
   }
 }
@@ -84,6 +88,12 @@ class QuizList extends _$QuizList {
     } else {
       finishQuiz();
     }
+  }
+
+  void toggleShowAnswer() {
+    state = AsyncValue.data(
+      state.value!.copyWith(showAnswer: !state.value!.showAnswer),
+    );
   }
 
   Future<void> finishQuiz() async {

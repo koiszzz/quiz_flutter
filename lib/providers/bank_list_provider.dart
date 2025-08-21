@@ -16,11 +16,12 @@ class BankList extends _$BankList {
     return _dbHelper.getAllBanks();
   }
 
-  Future<void> addBank(QuestionBank bank) async {
-    await _dbHelper.insertBank(bank);
+  Future<int> addBank(QuestionBank bank) async {
+    final id = await _dbHelper.insertBank(bank);
     ref.invalidateSelf();
     // Wait for the state to be updated
     await future;
+    return id;
   }
 
   Future<void> updateBank(QuestionBank bank) async {
@@ -33,5 +34,9 @@ class BankList extends _$BankList {
     await _dbHelper.deleteBank(id);
     ref.invalidateSelf();
     await future;
+  }
+
+  Future<void> addQuestion(Question question) async {
+    await _dbHelper.insertQuestion(question);
   }
 }

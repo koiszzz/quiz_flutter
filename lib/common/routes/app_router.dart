@@ -54,11 +54,10 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const QuizScreen(),
       routes: [
         GoRoute(
-          path: 'taking',
+          path: 'taking/:mode/:bankId',
           builder: (context, state) {
-            final data = state.extra as Map<String, dynamic>;
-            final bankId = data['bankId'] == null ? 0 : data['bankId'] as int;
-            final mode = data['mode'] as String;
+            final bankId = int.parse(state.pathParameters['bankId']!);
+            final mode = state.pathParameters['mode'] as String ?? 'practice';
             return QuizTakingScreen(bankId: bankId, mode: mode);
           },
         ),

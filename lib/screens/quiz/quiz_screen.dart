@@ -96,8 +96,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                   onTap: () {
                     Navigator.of(dialogContext).pop();
                     context.go(
-                      '/quiz/taking',
-                      extra: {'bankId': bank.id!, 'mode': mode},
+                      '/quiz/taking/$mode/${bank.id}',
                     );
                   },
                 );
