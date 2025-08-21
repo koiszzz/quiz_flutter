@@ -57,7 +57,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       elevation: 2.0,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: ListTile(
-        leading: Icon(icon, size: 40, color: Theme.of(context).primaryColor),
+        leading: Icon(icon, size: 40, color: Theme.of(context).iconTheme.color),
         title: Text(title, style: Theme.of(context).textTheme.titleLarge),
         subtitle: Text(subtitle),
         onTap: onTap,
