@@ -16,75 +16,88 @@ final router = GoRouter(
   initialLocation: '/',
   errorBuilder: (context, state) => const PageNoFoundScreen(),
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
     GoRoute(
-      path: '/bank',
-      builder: (context, state) => const BankScreen(),
+      path: '/',
+      builder: (context, state) => const HomeScreen(),
       routes: [
         GoRoute(
-          path: ':bankId/questions',
-          builder: (context, state) {
-            final bankId = int.tryParse(state.pathParameters['bankId'] ?? '');
-            return QuestionListScreen(bankId: bankId!);
-          },
+          path: '/bank',
+          builder: (context, state) => const BankScreen(),
           routes: [
             GoRoute(
-              path: 'add',
+              path: ':bankId/questions',
               builder: (context, state) {
-                final bankId = int.parse(state.pathParameters['bankId']!);
-                return AddEditQuestionScreen(bankId: bankId);
-              },
-            ),
-            GoRoute(
-              path: 'edit',
-              builder: (context, state) {
-                final question = state.extra as Question;
-                return AddEditQuestionScreen(
-                  question: question,
-                  bankId: question.bankId,
+                final bankId = int.tryParse(
+                  state.pathParameters['bankId'] ?? '',
                 );
+                return QuestionListScreen(bankId: bankId!);
               },
+              routes: [
+                GoRoute(
+                  path: 'add',
+                  builder: (context, state) {
+                    final bankId = int.parse(state.pathParameters['bankId']!);
+                    return AddEditQuestionScreen(bankId: bankId);
+                  },
+                ),
+                GoRoute(
+                  path: 'edit',
+                  builder: (context, state) {
+                    final question = state.extra as Question;
+                    return AddEditQuestionScreen(
+                      question: question,
+                      bankId: question.bankId,
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),
+        // GoRoute(
+        //   path: '/bank/edit',
+        //   builder: (context, state) {
+        //     final bankId = state.uri.queryParameters['id'];
+        //     return BankEditScreen(
+        //       bankId: bankId == null ? null : int.parse(bankId),
+        //     );
+        //   },
+        // ),
+        GoRoute(path: '/quiz', builder: (context, state) => const QuizScreen()),
+        GoRoute(
+          path: '/quiz/taking/:mode/:bankId',
+          builder: (context, state) {
+            final bankId = int.tryParse(state.pathParameters['bankId'] ?? '');
+            final mode = state.pathParameters['mode']!;
+            final query = state.uri.queryParameters;
+
+            final config = QuizConfig(
+              bankId: bankId,
+              mode: mode,
+              single: int.tryParse(query['single'] ?? '0') ?? 0,
+              multiple: int.tryParse(query['multiple'] ?? '0') ?? 0,
+              trueFalse: int.tryParse(query['trueFalse'] ?? '0') ?? 0,
+              duration: int.tryParse(query['duration'] ?? '0') ?? 0,
+              shuffleQuestions: query['shuffleQuestions'] == 'true',
+              shuffleOptions: query['shuffleOptions'] == 'true',
+            );
+
+            return QuizTakingScreen(config: config);
+          },
+        ),
+        GoRoute(
+          path: '/study',
+          builder: (context, state) => const StudyScreen(),
+        ),
+        GoRoute(
+          path: '/stats',
+          builder: (context, state) => const StatsScreen(),
+        ),
+        GoRoute(
+          path: '/settings',
+          builder: (context, state) => const SettingsScreen(),
+        ),
       ],
-    ),
-    // GoRoute(
-    //   path: '/bank/edit',
-    //   builder: (context, state) {
-    //     final bankId = state.uri.queryParameters['id'];
-    //     return BankEditScreen(
-    //       bankId: bankId == null ? null : int.parse(bankId),
-    //     );
-    //   },
-    // ),
-    GoRoute(path: '/quiz', builder: (context, state) => const QuizScreen()),
-    GoRoute(
-      path: '/quiz/taking/:mode/:bankId',
-      builder: (context, state) {
-        final bankId = int.tryParse(state.pathParameters['bankId'] ?? '');
-        final mode = state.pathParameters['mode']!;
-        final query = state.uri.queryParameters;
-
-        final config = QuizConfig(
-          bankId: bankId,
-          mode: mode,
-          single: int.tryParse(query['single'] ?? '0') ?? 0,
-          multiple: int.tryParse(query['multiple'] ?? '0') ?? 0,
-          trueFalse: int.tryParse(query['trueFalse'] ?? '0') ?? 0,
-          duration: int.tryParse(query['duration'] ?? '0') ?? 0,
-          shuffleQuestions: query['shuffleQuestions'] == 'true',
-          shuffleOptions: query['shuffleOptions'] == 'true',
-        );
-
-        return QuizTakingScreen(config: config);
-      },
-    ),
-    GoRoute(path: '/study', builder: (context, state) => const StudyScreen()),
-    GoRoute(path: '/stats', builder: (context, state) => const StatsScreen()),
-    GoRoute(
-      path: '/settings',
-      builder: (context, state) => const SettingsScreen(),
     ),
   ],
 );
