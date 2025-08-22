@@ -1,27 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quiz_flutter/providers/quiz_provider.dart';
 import 'dart:convert';
 import 'package:quiz_flutter/models/models.dart';
 
-final String optionPrefix = 'ABCDEFGHIJK';
+final optionPrefix = 'ABCDEFGHIJK';
 
 class QuizTakingScreen extends ConsumerWidget {
-  final int? bankId;
-  final String mode;
+  final QuizConfig config;
 
-  const QuizTakingScreen({super.key, this.bankId, required this.mode});
+  const QuizTakingScreen({super.key, required this.config});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final quizListAsyncValue = ref.watch(
-      quizListProvider(bankId: bankId, mode: mode),
-    );
+    final quizListAsyncValue = ref.watch(quizListProvider(config));
+
     return switch (quizListAsyncValue) {
       AsyncData(:final value) => Scaffold(
         appBar: AppBar(
-          title: Text('$mode 模式'),
+          title: Text('${config.mode} 模式'),
           actions: [
+            if (config.mode == 'exam')
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: Text(
+                    '${value.remainingTime.inMinutes.toString().padLeft(2, '0')}:${(value.remainingTime.inSeconds % 60).toString().padLeft(2, '0')}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontFeatures: [const FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ),
+              ),
             value.currentQuestion != null
                 ? IconButton(
                     icon: Icon(
@@ -34,12 +45,7 @@ class QuizTakingScreen extends ConsumerWidget {
                     ),
                     onPressed: () {
                       ref
-                          .read(
-                            quizListProvider(
-                              bankId: bankId,
-                              mode: mode,
-                            ).notifier,
-                          )
+                          .read(quizListProvider(config).notifier)
                           .toggleCurrentFav();
                     },
                   )
@@ -79,17 +85,14 @@ class QuizTakingScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             _buildOptions(context, ref, provider, question),
-
-            if (mode == 'practice')
+            if (config.mode == 'practice')
               ListTile(
-                title: Text('是否显示答案'),
+                title: const Text('是否显示答案'),
                 trailing: Switch(
                   value: provider.showAnswer,
                   onChanged: (newValue) {
                     ref
-                        .read(
-                          quizListProvider(bankId: bankId, mode: mode).notifier,
-                        )
+                        .read(quizListProvider(config).notifier)
                         .toggleShowAnswer();
                   },
                 ),
@@ -97,29 +100,35 @@ class QuizTakingScreen extends ConsumerWidget {
             if (provider.showAnswer && userAnswer != null)
               _buildAnswerView(context, question),
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: provider.currentIndex > 0
-                  ? () => ref
-                        .read(
-                          quizListProvider(bankId: bankId, mode: mode).notifier,
-                        )
-                        .preQuestion()
-                  : null,
-              child: const Text('上一题'),
-            ),
-            ElevatedButton(
-              onPressed: provider.userAnswers.containsKey(question.id)
-                  ? () => ref
-                        .read(
-                          quizListProvider(bankId: bankId, mode: mode).notifier,
-                        )
-                        .nextQuestion()
-                  : null,
-              child: Text(
-                provider.currentIndex == provider.questions.length - 1
-                    ? '完成'
-                    : '下一题',
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: provider.currentIndex > 0
+                        ? () => ref
+                              .read(quizListProvider(config).notifier)
+                              .preQuestion()
+                        : null,
+                    child: const Text('上一题'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: provider.userAnswers.containsKey(question.id)
+                        ? () => ref
+                              .read(quizListProvider(config).notifier)
+                              .nextQuestion()
+                        : null,
+                    child: Text(
+                      provider.currentIndex == provider.questions.length - 1
+                          ? '完成'
+                          : '下一题',
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -135,7 +144,6 @@ class QuizTakingScreen extends ConsumerWidget {
   ) {
     final options = jsonDecode(question.options) as List;
     final userAnswer = provider.userAnswers[question.id];
-    final correctAnswer = jsonDecode(question.answer);
 
     switch (question.type) {
       case '单选':
@@ -145,54 +153,39 @@ class QuizTakingScreen extends ConsumerWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: options.length,
           itemBuilder: (context, index) {
-            bool isSelected = userAnswer == index;
-            bool isCorrect = correctAnswer == index;
-            bool isWrong = isSelected && !isCorrect;
-
             return Card(
-              color: isWrong ? Theme.of(context).colorScheme.error : null,
               child: RadioListTile<int>(
                 title: Text('${optionPrefix[index]}: ${options[index]}'),
                 value: index,
                 groupValue: userAnswer,
                 onChanged: (value) {
                   ref
-                      .read(
-                        quizListProvider(bankId: bankId, mode: mode).notifier,
-                      )
+                      .read(quizListProvider(config).notifier)
                       .answerQuestion(question.id!, value);
                 },
-                secondary: isWrong ? const Icon(Icons.close) : null,
               ),
             );
           },
         );
       case '多选':
-        // Initialize answer list if not present
         final currentAnswers =
-            (userAnswer as List<bool>?) ?? List.filled(options.length, false);
+            (userAnswer as List<dynamic>?)?.cast<bool>() ??
+            List.filled(options.length, false);
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: options.length,
           itemBuilder: (context, index) {
-            bool isSelected = currentAnswers[index];
-            bool isCorrect = (correctAnswer as List<dynamic>)[index];
-            bool isWrong = isSelected && !isCorrect;
             return Card(
-              color: isWrong ? Theme.of(context).colorScheme.error : null,
               child: CheckboxListTile(
                 title: Text('${optionPrefix[index]}: ${options[index]}'),
                 value: currentAnswers[index],
                 onChanged: (value) {
                   currentAnswers[index] = value!;
                   ref
-                      .read(
-                        quizListProvider(bankId: bankId, mode: mode).notifier,
-                      )
+                      .read(quizListProvider(config).notifier)
                       .answerQuestion(question.id!, currentAnswers);
                 },
-                secondary: isWrong ? const Icon(Icons.close) : null,
               ),
             );
           },
@@ -234,20 +227,23 @@ class QuizTakingScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('正确答案: ', style: TextStyle(fontSize: 18)),
+            Text('正确答案: ', style: Theme.of(context).textTheme.titleLarge),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 correctAnswerText,
-                style: const TextStyle(
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.green,
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-            Text('解析: ', style: TextStyle(fontSize: 18)),
-            Text(question.explanation ?? '无解析'),
+            if (question.explanation != null &&
+                question.explanation!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text('解析: ', style: Theme.of(context).textTheme.titleLarge),
+              Text(question.explanation!),
+            ],
           ],
         ),
       ),
@@ -259,6 +255,7 @@ class QuizTakingScreen extends ConsumerWidget {
     WidgetRef ref,
     QuizState provider,
   ) {
+    final score = ref.read(quizListProvider(config).notifier).getScore();
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -266,15 +263,13 @@ class QuizTakingScreen extends ConsumerWidget {
           Text('答题完成!', style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 20),
           Text(
-            '你的得分: ${ref.read(quizListProvider(bankId: bankId, mode: mode).notifier).getScore()} / ${provider.questions.length}',
+            '你的得分: $score / ${provider.questions.length}',
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('返回'),
+            onPressed: () => context.go('/'),
+            child: const Text('返回主页'),
           ),
         ],
       ),

@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:quiz_flutter/models/json_convert.dart';
 
 part 'quiz_record.freezed.dart';
 part 'quiz_record.g.dart';
@@ -8,9 +7,10 @@ part 'quiz_record.g.dart';
 abstract class QuizRecord with _$QuizRecord {
   factory QuizRecord({
     int? id,
-    @JsonKey(name: 'question_id') required int questionId,
-    @JsonKey(name: 'user_answer') @Default('') String userAnswer,
-    @JsonKey(name: 'is_correct') @BooleanSerializer() required bool isCorrect,
+    @JsonKey(name: 'bank_id') required int bankId,
+    @Default('') String answers,
+    required int score,
+    required int duration,
     required DateTime timestamp,
     required String mode,
   }) = _QuizRecord;

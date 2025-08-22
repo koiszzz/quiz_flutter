@@ -6,15 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="908919b5-dea1-4cdc-b5b2-8decbaae861b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/devtools_options.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/devtools_options.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/common/routes/app_router.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/common/routes/app_router.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/providers/bank_list_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/bank_list_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/providers/bank_list_provider.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/bank_list_provider.g.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/providers/quiz_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/quiz_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/quiz_record.freezed.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/quiz_record.freezed.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/screens/bank/bank_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/bank/bank_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/quiz/quiz_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/quiz/quiz_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/quiz/quiz_taking_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/quiz/quiz_taking_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/quiz_flutter.iml" beforeDir="false" afterPath="$PROJECT_DIR$/quiz_flutter.iml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +59,6 @@
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "dart.analysis.tool.window.visible": "false",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "io.flutter.reload.alreadyRun": "true",
@@ -89,16 +81,5 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
     </layout>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/lib/screens/quiz/quiz_taking_screen.dart</url>
-          <line>185</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

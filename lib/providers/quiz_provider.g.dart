@@ -13,7 +13,7 @@ final class QuizListProvider
     extends $AsyncNotifierProvider<QuizList, QuizState> {
   const QuizListProvider._({
     required QuizListFamily super.from,
-    required ({int? bankId, String mode}) super.argument,
+    required QuizConfig super.argument,
   }) : super(
          retry: null,
          name: r'quizListProvider',
@@ -29,7 +29,7 @@ final class QuizListProvider
   String toString() {
     return r'quizListProvider'
         ''
-        '$argument';
+        '($argument)';
   }
 
   @$internal
@@ -47,7 +47,7 @@ final class QuizListProvider
   }
 }
 
-String _$quizListHash() => r'2d58f4b8c3681e4fbd9d431e7c8b350fab9e4db9';
+String _$quizListHash() => r'78720cced594bc87d0eea88c35b3536cd6c76a82';
 
 final class QuizListFamily extends $Family
     with
@@ -56,7 +56,7 @@ final class QuizListFamily extends $Family
           AsyncValue<QuizState>,
           QuizState,
           FutureOr<QuizState>,
-          ({int? bankId, String mode})
+          QuizConfig
         > {
   const QuizListFamily._()
     : super(
@@ -67,23 +67,22 @@ final class QuizListFamily extends $Family
         isAutoDispose: true,
       );
 
-  QuizListProvider call({int? bankId, required String mode}) =>
-      QuizListProvider._(argument: (bankId: bankId, mode: mode), from: this);
+  QuizListProvider call(QuizConfig config) =>
+      QuizListProvider._(argument: config, from: this);
 
   @override
   String toString() => r'quizListProvider';
 }
 
 abstract class _$QuizList extends $AsyncNotifier<QuizState> {
-  late final _$args = ref.$arg as ({int? bankId, String mode});
-  int? get bankId => _$args.bankId;
-  String get mode => _$args.mode;
+  late final _$args = ref.$arg as QuizConfig;
+  QuizConfig get config => _$args;
 
-  FutureOr<QuizState> build({int? bankId, required String mode});
+  FutureOr<QuizState> build(QuizConfig config);
   @$mustCallSuper
   @override
   void runBuild() {
-    final created = build(bankId: _$args.bankId, mode: _$args.mode);
+    final created = build(_$args);
     final ref = this.ref as $Ref<AsyncValue<QuizState>, QuizState>;
     final element =
         ref.element

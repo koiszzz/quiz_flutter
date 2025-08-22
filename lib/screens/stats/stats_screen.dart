@@ -31,11 +31,8 @@ class StatsScreen extends ConsumerWidget {
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
-                  leading: Icon(
-                    record.isCorrect ? Icons.check_circle : Icons.cancel,
-                    color: record.isCorrect ? Colors.green : Colors.red,
-                  ),
-                  title: Text('题目ID: ${record.questionId}'),
+                  leading: Icon(Icons.check_circle, color: Colors.green),
+                  title: Text('成绩: ${record.score}'),
                   subtitle: Text(
                     '时间: ${DateFormat('yyyy-MM-dd HH:mm').format(record.timestamp)}模式: ${record.mode}',
                   ),

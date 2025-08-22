@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
   static const _databaseName = "QuizApp.db";
-  static const _databaseVersion = 1;
+  static const _databaseVersion = 2;
 
   // Tables
   static const tableBanks = 'banks';
@@ -32,9 +32,10 @@ class DatabaseHelper {
 
   // Record Columns
   static const columnRecordId = 'id';
-  static const columnRecordQuestionId = 'question_id';
-  static const columnRecordUserAnswer = 'user_answer';
-  static const columnRecordIsCorrect = 'is_correct';
+  static const columnRecordBankId = 'bank_id';
+  static const columnRecordAnswer = 'answers';
+  static const columnRecordScore = 'score';
+  static const columnRecordDuration = 'duration';
   static const columnRecordTimestamp = 'timestamp';
   static const columnRecordMode = 'mode';
 
@@ -62,6 +63,22 @@ class DatabaseHelper {
       path,
       version: _databaseVersion,
       onCreate: _onCreate,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('DROP TABLE $tableRecords');
+          await db.execute('''
+          CREATE TABLE $tableRecords (
+            $columnRecordId INTEGER PRIMARY KEY AUTOINCREMENT,
+            $columnRecordBankId INTEGER NOT NULL,
+            $columnRecordAnswer TEXT NOT NULL,
+            $columnRecordScore INTEGER NOT NULL,
+            $columnRecordDuration INTEGER NOT NULL,
+            $columnRecordTimestamp TEXT NOT NULL,
+            $columnRecordMode TEXT NOT NULL
+          )
+          ''');
+        }
+      },
     );
   }
 
@@ -92,12 +109,12 @@ class DatabaseHelper {
     await db.execute('''
           CREATE TABLE $tableRecords (
             $columnRecordId INTEGER PRIMARY KEY AUTOINCREMENT,
-            $columnRecordQuestionId INTEGER NOT NULL,
-            $columnRecordUserAnswer TEXT NOT NULL,
-            $columnRecordIsCorrect INTEGER NOT NULL,
+            $columnRecordBankId INTEGER NOT NULL,
+            $columnRecordAnswer TEXT NOT NULL,
+            $columnRecordScore INTEGER NOT NULL,
+            $columnRecordDuration INTEGER NOT NULL,
             $columnRecordTimestamp TEXT NOT NULL,
-            $columnRecordMode TEXT NOT NULL,
-            FOREIGN KEY ($columnRecordQuestionId) REFERENCES $tableQuestions ($columnQuestionId) ON DELETE CASCADE
+            $columnRecordMode TEXT NOT NULL
           )
           ''');
     await db.execute('''
@@ -160,6 +177,22 @@ class DatabaseHelper {
     });
   }
 
+  Future<Map<String, int>> getQuestionCountsByBank(int bankId) async {
+    final db = await instance.database;
+    final maps = await db.rawQuery(
+      '''
+      SELECT type, COUNT(*) as count
+      FROM $tableQuestions
+      WHERE $columnQuestionBankId = ?
+      GROUP BY type
+      ''',
+      [bankId],
+    );
+    return {
+      for (var item in maps) item['type'] as String: item['count'] as int,
+    };
+  }
+
   Future<int> updateQuestion(Question question) async {
     final db = await instance.database;
     return await db.update(
@@ -183,7 +216,7 @@ class DatabaseHelper {
     final db = await instance.database;
     final maps = await db.query(
       tableQuestions,
-      where: '$columnQuestionId IN (${ids.map((_) => '?').join(', ')})',
+      where: '$columnQuestionBankId IN (${ids.map((_) => '?').join(', ')})',
       whereArgs: ids,
     );
     return List.generate(maps.length, (i) {
@@ -213,6 +246,7 @@ class DatabaseHelper {
   // Record CRUD
   Future<int> insertRecord(QuizRecord record) async {
     final db = await instance.database;
+    print(record.toJson());
     return await db.insert(tableRecords, record.toJson());
   }
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_flutter/providers/settings_provider.dart';
@@ -8,6 +9,29 @@ import 'package:quiz_flutter/services/database_helper.dart';
 part 'quiz_provider.g.dart';
 
 @immutable
+class QuizConfig {
+  final int? bankId;
+  final String mode;
+  final int single;
+  final int multiple;
+  final int trueFalse;
+  final int duration;
+  final bool shuffleQuestions;
+  final bool shuffleOptions;
+
+  const QuizConfig({
+    this.bankId,
+    required this.mode,
+    this.single = 0,
+    this.multiple = 0,
+    this.trueFalse = 0,
+    this.duration = 0,
+    this.shuffleQuestions = false,
+    this.shuffleOptions = false,
+  });
+}
+
+@immutable
 class QuizState {
   final List<Question> questions;
   final Map<int, dynamic> userAnswers;
@@ -15,6 +39,8 @@ class QuizState {
   final bool quizFinished;
   final bool showAnswer;
   final DateTime startTime;
+  final Duration remainingTime;
+  final QuizConfig quizConfig;
 
   const QuizState({
     this.questions = const [],
@@ -23,6 +49,8 @@ class QuizState {
     this.quizFinished = false,
     this.showAnswer = false,
     required this.startTime,
+    required this.remainingTime,
+    required this.quizConfig,
   });
 
   Question? get currentQuestion =>
@@ -36,6 +64,7 @@ class QuizState {
     int? currentIndex,
     bool? quizFinished,
     bool? showAnswer,
+    Duration? remainingTime,
   }) {
     return QuizState(
       questions: questions ?? this.questions,
@@ -44,6 +73,8 @@ class QuizState {
       quizFinished: quizFinished ?? this.quizFinished,
       showAnswer: showAnswer ?? this.showAnswer,
       startTime: startTime,
+      remainingTime: remainingTime ?? this.remainingTime,
+      quizConfig: quizConfig,
     );
   }
 }
@@ -51,28 +82,107 @@ class QuizState {
 @riverpod
 class QuizList extends _$QuizList {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
-  late final String _mode;
+  Timer? _timer;
 
   @override
-  Future<QuizState> build({int? bankId, required String mode}) async {
-    _mode = mode;
-    final questions = await _loadQuestions(bankId: bankId, mode: mode);
+  Future<QuizState> build(QuizConfig config) async {
+    ref.onDispose(() => _timer?.cancel());
+
+    final questions = await _loadQuestions(config);
     final systemSettings = ref.read(settingsProvider);
+
+    if (config.mode == 'exam') {
+      _timer = Timer.periodic(const Duration(seconds: 1), _tick);
+    }
+
     return QuizState(
       questions: questions,
-      showAnswer: systemSettings['showAnswer'],
+      showAnswer: config.mode == 'practice'
+          ? systemSettings['showAnswer']
+          : false,
       startTime: DateTime.now(),
+      remainingTime: Duration(minutes: config.duration),
+      quizConfig: config,
     );
   }
 
-  Future<List<Question>> _loadQuestions({
-    int? bankId,
-    required String mode,
-  }) async {
-    return _dbHelper.getQuestionsWithFav(
-      bankId: bankId,
-      onlyFav: mode == 'favorites',
+  void _tick(Timer timer) {
+    if (state.value == null) return;
+    final newTime = state.value!.remainingTime - const Duration(seconds: 1);
+    if (newTime.inSeconds <= 0) {
+      timer.cancel();
+      finishQuiz();
+    } else {
+      state = AsyncValue.data(state.value!.copyWith(remainingTime: newTime));
+    }
+  }
+
+  Future<List<Question>> _loadQuestions(QuizConfig config) async {
+    final allQuestions = await _dbHelper.getQuestionsWithFav(
+      bankId: config.bankId,
+      onlyFav: config.mode == 'favorites',
     );
+
+    if (config.mode == 'favorites') {
+      return allQuestions..shuffle();
+    }
+
+    List<Question> single = allQuestions.where((q) => q.type == '单选').toList();
+    List<Question> multiple = allQuestions
+        .where((q) => q.type == '多选')
+        .toList();
+    List<Question> trueFalse = allQuestions
+        .where((q) => q.type == '判断')
+        .toList();
+
+    if (config.shuffleQuestions) {
+      single.shuffle();
+      multiple.shuffle();
+      trueFalse.shuffle();
+    }
+
+    final selectedQuestions = [
+      ...single.take(config.single),
+      ...multiple.take(config.multiple),
+      ...trueFalse.take(config.trueFalse),
+    ];
+    try {
+      if (config.shuffleOptions) {
+        final List<Question> shuffleds = [];
+        for (final question in selectedQuestions) {
+          if (question.type == '判断') {
+            shuffleds.add(question); // No options to shuffle for true/false
+            continue;
+          }
+          final originalOptions = jsonDecode(question.options) as List;
+          final originalAnswer = jsonDecode(question.answer);
+          final List<int> newIndices = List<int>.generate(
+            originalOptions.length,
+            (i) => i,
+          )..shuffle();
+          final shuffledOptions = newIndices
+              .map((i) => originalOptions[i])
+              .toList();
+          dynamic shuffledAnswer;
+          if (question.type == '单选') {
+            final originalAnswer = jsonDecode(question.answer);
+            shuffledAnswer = newIndices[originalAnswer];
+          } else if (question.type == '多选') {
+            shuffledAnswer = [for (final fi in newIndices) originalAnswer[fi]];
+          }
+          shuffleds.add(
+            question.copyWith(
+              options: jsonEncode(shuffledOptions),
+              answer: jsonEncode(shuffledAnswer),
+            ),
+          );
+        }
+        return shuffleds;
+      }
+    } on Exception catch (e) {
+      print('Error shuffling options: $e');
+    }
+    return selectedQuestions;
   }
 
   void answerQuestion(int questionId, dynamic answer) {
@@ -130,7 +240,7 @@ class QuizList extends _$QuizList {
 
   Future<void> finishQuiz() async {
     if (state.value?.quizFinished ?? true) return;
-
+    _timer?.cancel();
     state = AsyncValue.data(state.value!.copyWith(quizFinished: true));
     await _saveRecords();
   }
@@ -138,21 +248,21 @@ class QuizList extends _$QuizList {
   Future<void> _saveRecords() async {
     final currentState = state.value;
     if (currentState == null) return;
-
-    for (var question in currentState.questions) {
-      final userAnswer = currentState.userAnswers[question.id!];
-      if (userAnswer != null) {
-        final isCorrect = _isCorrect(question, userAnswer);
-        final record = QuizRecord(
-          questionId: question.id!,
-          userAnswer: jsonEncode(userAnswer),
-          isCorrect: isCorrect,
-          timestamp: DateTime.now(),
-          mode: _mode,
-        );
-        await _dbHelper.insertRecord(record);
-      }
-    }
+    String userAnswersJson = '{';
+    currentState.userAnswers.forEach((key, value) {
+      userAnswersJson += '"$key": "${value.toString()}",';
+    });
+    userAnswersJson =
+        '${userAnswersJson.substring(0, userAnswersJson.length - 1)}}';
+    final record = QuizRecord(
+      bankId: currentState.quizConfig.bankId!,
+      mode: currentState.quizConfig.mode,
+      score: getScore(),
+      duration: (DateTime.now().difference(currentState.startTime)).inSeconds,
+      answers: userAnswersJson,
+      timestamp: DateTime.now(),
+    );
+    await _dbHelper.insertRecord(record);
   }
 
   bool _isCorrect(Question question, dynamic userAnswer) {
@@ -168,18 +278,6 @@ class QuizList extends _$QuizList {
       return false;
     }
     return false;
-  }
-
-  bool isComplete() {
-    final currentState = state.value;
-    if (currentState == null) return false;
-
-    for (var question in currentState.questions) {
-      if (!currentState.userAnswers.containsKey(question.id)) {
-        return false;
-      }
-    }
-    return true;
   }
 
   int getScore() {
