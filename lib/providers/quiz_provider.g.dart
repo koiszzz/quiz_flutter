@@ -47,7 +47,7 @@ final class QuizListProvider
   }
 }
 
-String _$quizListHash() => r'78720cced594bc87d0eea88c35b3536cd6c76a82';
+String _$quizListHash() => r'd9a7700bc75b9e0bb40282d418442194190f553b';
 
 final class QuizListFamily extends $Family
     with

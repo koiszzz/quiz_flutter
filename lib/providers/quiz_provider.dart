@@ -18,6 +18,7 @@ class QuizConfig {
   final int duration;
   final bool shuffleQuestions;
   final bool shuffleOptions;
+  final bool withoutTaken;
 
   const QuizConfig({
     this.bankId,
@@ -28,6 +29,7 @@ class QuizConfig {
     this.duration = 0,
     this.shuffleQuestions = false,
     this.shuffleOptions = false,
+    this.withoutTaken = false,
   });
 }
 
@@ -118,15 +120,11 @@ class QuizList extends _$QuizList {
   }
 
   Future<List<Question>> _loadQuestions(QuizConfig config) async {
-    final allQuestions = await _dbHelper.getQuestionsWithFav(
-      bankId: config.bankId,
-      onlyFav: config.mode == 'favorites',
+    final List<Question> allQuestions = await _dbHelper.getQuestionsByBank(
+      bankId: config.bankId!,
+      withFavorites: config.mode == 'favorites',
+      withoutTaken: config.withoutTaken,
     );
-
-    if (config.mode == 'favorites') {
-      return allQuestions..shuffle();
-    }
-
     List<Question> single = allQuestions.where((q) => q.type == '单选').toList();
     List<Question> multiple = allQuestions
         .where((q) => q.type == '多选')
@@ -146,41 +144,37 @@ class QuizList extends _$QuizList {
       ...multiple.take(config.multiple),
       ...trueFalse.take(config.trueFalse),
     ];
-    try {
-      if (config.shuffleOptions) {
-        final List<Question> shuffleds = [];
-        for (final question in selectedQuestions) {
-          if (question.type == '判断') {
-            shuffleds.add(question); // No options to shuffle for true/false
-            continue;
-          }
-          final originalOptions = jsonDecode(question.options) as List;
-          final originalAnswer = jsonDecode(question.answer);
-          final List<int> newIndices = List<int>.generate(
-            originalOptions.length,
-            (i) => i,
-          )..shuffle();
-          final shuffledOptions = newIndices
-              .map((i) => originalOptions[i])
-              .toList();
-          dynamic shuffledAnswer;
-          if (question.type == '单选') {
-            final originalAnswer = jsonDecode(question.answer);
-            shuffledAnswer = newIndices[originalAnswer];
-          } else if (question.type == '多选') {
-            shuffledAnswer = [for (final fi in newIndices) originalAnswer[fi]];
-          }
-          shuffleds.add(
-            question.copyWith(
-              options: jsonEncode(shuffledOptions),
-              answer: jsonEncode(shuffledAnswer),
-            ),
-          );
+    if (config.shuffleOptions) {
+      final List<Question> shuffleds = [];
+      for (final question in selectedQuestions) {
+        if (question.type == '判断') {
+          shuffleds.add(question); // No options to shuffle for true/false
+          continue;
         }
-        return shuffleds;
+        final originalOptions = jsonDecode(question.options) as List;
+        final originalAnswer = jsonDecode(question.answer);
+        final List<int> newIndices = List<int>.generate(
+          originalOptions.length,
+          (i) => i,
+        )..shuffle();
+        final shuffledOptions = newIndices
+            .map((i) => originalOptions[i])
+            .toList();
+        dynamic shuffledAnswer;
+        if (question.type == '单选') {
+          final originalAnswer = jsonDecode(question.answer);
+          shuffledAnswer = newIndices[originalAnswer];
+        } else if (question.type == '多选') {
+          shuffledAnswer = [for (final fi in newIndices) originalAnswer[fi]];
+        }
+        shuffleds.add(
+          question.copyWith(
+            options: jsonEncode(shuffledOptions),
+            answer: jsonEncode(shuffledAnswer),
+          ),
+        );
       }
-    } on Exception catch (e) {
-      print('Error shuffling options: $e');
+      return shuffleds;
     }
     return selectedQuestions;
   }
@@ -222,13 +216,9 @@ class QuizList extends _$QuizList {
           }).toList(),
         ),
       );
-      if (isFavorite) {
-        await _dbHelper.insertFavorite(
-          Favorite(questionId: currentQuestion.id!),
-        );
-      } else {
-        await _dbHelper.deleteFavorite(currentQuestion.id!);
-      }
+      await _dbHelper.updateQuestion(
+        currentQuestion.copyWith(isFavorite: isFavorite),
+      );
     }
   }
 
@@ -254,6 +244,19 @@ class QuizList extends _$QuizList {
     });
     userAnswersJson =
         '${userAnswersJson.substring(0, userAnswersJson.length - 1)}}';
+
+    for (final Question q in currentState.questions) {
+      final questionUpdate = q.copyWith(
+        takingTimes: q.takingTimes + 1,
+        lastTakenAt: DateTime.now(),
+        uncorrectTimes:
+            (currentState.userAnswers[q.id] != null &&
+                !_isCorrect(q, currentState.userAnswers[q.id]))
+            ? q.uncorrectTimes + 1
+            : q.uncorrectTimes,
+      );
+      await _dbHelper.updateQuestion(questionUpdate);
+    }
     final record = QuizRecord(
       bankId: currentState.quizConfig.bankId!,
       mode: currentState.quizConfig.mode,

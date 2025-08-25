@@ -226,6 +226,10 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
       tags: _tags,
       bankId: widget.bankId,
       createdAt: widget.question?.createdAt ?? DateTime.now(),
+      updatedAt: widget.question?.updatedAt ?? DateTime.now(),
+      takingTimes: widget.question?.takingTimes ?? 0,
+      lastTakenAt: widget.question?.lastTakenAt ?? DateTime.now(),
+      uncorrectTimes: widget.question?.uncorrectTimes ?? 0,
     );
     if (widget.question == null) {
       ref

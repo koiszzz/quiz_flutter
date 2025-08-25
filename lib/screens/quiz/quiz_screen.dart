@@ -26,8 +26,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   final _practiceMultipleController = TextEditingController(text: '0');
   final _practiceTrueFalseController = TextEditingController(text: '0');
   final _practiceDurationController = TextEditingController(text: '0');
-  bool _practiceShuffleQuestions = false;
+  bool _practiceShuffleQuestions = true;
   bool _practiceShuffleOptions = false;
+  bool _practiceWithoutTaken = false;
 
   // Exam Mode State
   int? _examSelectedBankId;
@@ -98,11 +99,15 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     setState(() {
       if (mode == 'practice') {
         _practiceSelectedBankId = bankId;
-        _practiceSingleController.text = (_singleCount[bankId] ?? 0).toString();
-        _practiceMultipleController.text = (_multipleCount[bankId] ?? 0)
-            .toString();
-        _practiceTrueFalseController.text = (_trueFalseCount[bankId] ?? 0)
-            .toString();
+        _practiceSingleController.text =
+            ((_singleCount[bankId] ?? 0) > 10 ? 10 : _singleCount[bankId])
+                .toString();
+        _practiceMultipleController.text =
+            ((_multipleCount[bankId] ?? 0) > 5 ? 5 : _multipleCount[bankId])
+                .toString();
+        _practiceTrueFalseController.text =
+            ((_trueFalseCount[bankId] ?? 0) > 5 ? 5 : _trueFalseCount[bankId])
+                .toString();
       } else {
         _examSelectedBankId = bankId;
         _examSingleController.text = (_singleCount[bankId] ?? 0).toString();
@@ -140,7 +145,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           : _examShuffleOptions;
 
       context.go(
-        '/quiz/taking/$mode/$bankId?single=$single&multiple=$multiple&trueFalse=$trueFalse&duration=$duration&shuffleQuestions=$shuffleQuestions&shuffleOptions=$shuffleOptions',
+        '/quiz/taking/$mode/$bankId?single=$single&multiple=$multiple&trueFalse=$trueFalse&duration=$duration&shuffleQuestions=$shuffleQuestions&shuffleOptions=$shuffleOptions${mode == 'practice' ? '&withoutTaken=$_practiceWithoutTaken' : ''}',
       );
     }
   }
@@ -334,6 +339,16 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                   });
                 },
               ),
+              if (mode == 'practice')
+                SwitchListTile(
+                  title: const Text('不考已做过的题'),
+                  value: _practiceWithoutTaken,
+                  onChanged: (value) {
+                    setState(() {
+                      _practiceWithoutTaken = value;
+                    });
+                  },
+                ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => _startQuiz(mode),

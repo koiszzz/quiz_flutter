@@ -16,9 +16,13 @@ _Question _$QuestionFromJson(Map<String, dynamic> json) => _Question(
   tags: json['tags'] as String?,
   bankId: (json['bank_id'] as num).toInt(),
   createdAt: const TimestampSerializer().fromJson(json['created_at']),
+  updatedAt: const TimestampSerializer().fromJson(json['updated_at']),
   isFavorite: json['is_favorite'] == null
       ? false
       : const BooleanSerializer().fromJson(json['is_favorite']),
+  takingTimes: (json['taking_times'] as num).toInt(),
+  lastTakenAt: const TimestampSerializer().fromJson(json['last_taken_at']),
+  uncorrectTimes: (json['uncorrect_times'] as num).toInt(),
 );
 
 Map<String, dynamic> _$QuestionToJson(_Question instance) => <String, dynamic>{
@@ -31,4 +35,9 @@ Map<String, dynamic> _$QuestionToJson(_Question instance) => <String, dynamic>{
   'tags': instance.tags,
   'bank_id': instance.bankId,
   'created_at': const TimestampSerializer().toJson(instance.createdAt),
+  'updated_at': const TimestampSerializer().toJson(instance.updatedAt),
+  'is_favorite': const BooleanSerializer().toJson(instance.isFavorite),
+  'taking_times': instance.takingTimes,
+  'last_taken_at': const TimestampSerializer().toJson(instance.lastTakenAt),
+  'uncorrect_times': instance.uncorrectTimes,
 };

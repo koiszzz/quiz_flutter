@@ -5,13 +5,12 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
   static const _databaseName = "QuizApp.db";
-  static const _databaseVersion = 2;
+  static const _databaseVersion = 3;
 
   // Tables
   static const tableBanks = 'banks';
   static const tableQuestions = 'questions';
   static const tableRecords = 'records';
-  static const tableFavorites = 'favorites';
 
   // Bank Columns
   static const columnBankId = 'id';
@@ -29,6 +28,11 @@ class DatabaseHelper {
   static const columnQuestionTags = 'tags';
   static const columnQuestionBankId = 'bank_id';
   static const columnQuestionCreatedAt = 'created_at';
+  static const columnQuestionUpdatedAt = 'updated_at';
+  static const columnQuestionIsFavorite = 'is_favorite';
+  static const columnQuestionTakingTimes = 'taking_times';
+  static const columnQuestionLastTakenAt = 'last_taken_at';
+  static const columnQuestionUncorrectTimes = 'uncorrect_times';
 
   // Record Columns
   static const columnRecordId = 'id';
@@ -38,10 +42,6 @@ class DatabaseHelper {
   static const columnRecordDuration = 'duration';
   static const columnRecordTimestamp = 'timestamp';
   static const columnRecordMode = 'mode';
-
-  // Favorite Columns
-  static const columnFavoriteId = 'id';
-  static const columnFavoriteQuestionId = 'question_id';
 
   // make this a singleton class
   DatabaseHelper._privateConstructor();
@@ -77,6 +77,22 @@ class DatabaseHelper {
             $columnRecordMode TEXT NOT NULL
           )
           ''');
+        } else if (oldVersion < 3) {
+          await db.execute(
+            'ALTER TABLE $tableQuestions ADD COLUMN $columnQuestionUpdatedAt TEXT NOT NULL DEFAULT ""',
+          );
+          await db.execute(
+            'ALTER TABLE $tableQuestions ADD COLUMN $columnQuestionIsFavorite INTEGER NOT NULL DEFAULT 0',
+          );
+          await db.execute(
+            'ALTER TABLE $tableQuestions ADD COLUMN $columnQuestionTakingTimes INTEGER NOT NULL DEFAULT 0',
+          );
+          await db.execute(
+            'ALTER TABLE $tableQuestions ADD COLUMN $columnQuestionLastTakenAt TEXT NOT NULL DEFAULT ""',
+          );
+          await db.execute(
+            'ALTER TABLE $tableQuestions ADD COLUMN $columnQuestionUncorrectTimes INTEGER NOT NULL DEFAULT 0',
+          );
         }
       },
     );
@@ -103,6 +119,11 @@ class DatabaseHelper {
             $columnQuestionTags TEXT,
             $columnQuestionBankId INTEGER NOT NULL,
             $columnQuestionCreatedAt TEXT NOT NULL,
+            $columnQuestionUpdatedAt TEXT NOT NULL,
+            $columnQuestionIsFavorite INTEGER NOT NULL,
+            $columnQuestionTakingTimes INTEGER NOT NULL,
+            $columnQuestionLastTakenAt TEXT NOT NULL,
+            $columnQuestionUncorrectTimes INTEGER NOT NULL,
             FOREIGN KEY ($columnQuestionBankId) REFERENCES $tableBanks ($columnBankId) ON DELETE CASCADE
           )
           ''');
@@ -115,13 +136,6 @@ class DatabaseHelper {
             $columnRecordDuration INTEGER NOT NULL,
             $columnRecordTimestamp TEXT NOT NULL,
             $columnRecordMode TEXT NOT NULL
-          )
-          ''');
-    await db.execute('''
-          CREATE TABLE $tableFavorites (
-            $columnFavoriteId INTEGER PRIMARY KEY AUTOINCREMENT,
-            $columnFavoriteQuestionId INTEGER NOT NULL,
-            FOREIGN KEY ($columnFavoriteQuestionId) REFERENCES $tableQuestions ($columnQuestionId) ON DELETE CASCADE
           )
           ''');
   }
@@ -165,12 +179,20 @@ class DatabaseHelper {
     return await db.insert(tableQuestions, question.toJson());
   }
 
-  Future<List<Question>> getQuestionsByBank(int bankId) async {
+  Future<List<Question>> getQuestionsByBank({
+    required int bankId,
+    bool withFavorites = false,
+    bool withoutTaken = false,
+  }) async {
     final db = await instance.database;
-    final maps = await db.query(
-      tableQuestions,
-      where: '$columnQuestionBankId = ?',
-      whereArgs: [bankId],
+    final maps = await db.rawQuery(
+      '''
+      SELECT * FROM $tableQuestions
+      WHERE $columnQuestionBankId = ?
+      ${withFavorites ? 'AND $columnQuestionIsFavorite = 1' : ''}
+      ${withoutTaken ? 'AND $columnQuestionTakingTimes = 0' : ''}
+      ''',
+      [bankId],
     );
     return List.generate(maps.length, (i) {
       return Question.fromJson(maps[i]);
@@ -224,29 +246,9 @@ class DatabaseHelper {
     });
   }
 
-  Future<List<Question>> getQuestionsWithFav({
-    int? bankId,
-    bool onlyFav = false,
-  }) async {
-    final db = await instance.database;
-    final maps = await db.rawQuery(
-      '''
-      SELECT q.*, f.$columnFavoriteId IS NOT NULL AS is_favorite
-      FROM $tableQuestions q
-      LEFT JOIN $tableFavorites f ON q.$columnQuestionId = f.$columnFavoriteQuestionId
-      WHERE q.$columnQuestionBankId = ? ${onlyFav ? 'AND f.$columnFavoriteId IS NOT NULL' : ''}
-    ''',
-      [bankId],
-    );
-    return List.generate(maps.length, (i) {
-      return Question.fromJson(maps[i]);
-    });
-  }
-
   // Record CRUD
   Future<int> insertRecord(QuizRecord record) async {
     final db = await instance.database;
-    print(record.toJson());
     return await db.insert(tableRecords, record.toJson());
   }
 
@@ -256,28 +258,5 @@ class DatabaseHelper {
     return List.generate(maps.length, (i) {
       return QuizRecord.fromJson(maps[i]);
     });
-  }
-
-  // Favorite CRUD
-  Future<int> insertFavorite(Favorite favorite) async {
-    final db = await instance.database;
-    return await db.insert(tableFavorites, favorite.toJson());
-  }
-
-  Future<List<Favorite>> getAllFavorites() async {
-    final db = await instance.database;
-    final maps = await db.query(tableFavorites);
-    return List.generate(maps.length, (i) {
-      return Favorite.fromJson(maps[i]);
-    });
-  }
-
-  Future<int> deleteFavorite(int questionId) async {
-    final db = await instance.database;
-    return await db.delete(
-      tableFavorites,
-      where: '$columnFavoriteQuestionId = ?',
-      whereArgs: [questionId],
-    );
   }
 }

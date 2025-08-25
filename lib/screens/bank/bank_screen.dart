@@ -94,22 +94,23 @@ class _BankScreenState extends ConsumerState<BankScreen> {
     );
 
     if (result == null) return;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(
-          child: Column(
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('正在导入，请稍候...'),
-            ],
-          ),
-        );
-      },
-    );
+    if (context.mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(
+            child: Column(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('正在导入，请稍候...'),
+              ],
+            ),
+          );
+        },
+      );
+    }
 
     try {
       final file = File(result.files.single.path!);
@@ -239,6 +240,10 @@ class _BankScreenState extends ConsumerState<BankScreen> {
           tags: tags,
           bankId: bankId,
           createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          takingTimes: 0,
+          lastTakenAt: DateTime.now(),
+          uncorrectTimes: 0,
         );
         await ref.read(bankListProvider.notifier).addQuestion(question);
       }
