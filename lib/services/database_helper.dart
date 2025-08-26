@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
   static const _databaseName = "QuizApp.db";
-  static const _databaseVersion = 4;
+  static const _databaseVersion = 5;
 
   // Tables
   static const tableBanks = 'banks';
@@ -69,42 +69,8 @@ class DatabaseHelper {
       onCreate: _onCreate,
       onUpgrade: (db, oldVersion, newVersion) async {
         log('当前系统数据库版本: $oldVersion => $newVersion');
-        if (oldVersion < 2) {
-          await db.execute('DROP TABLE $tableRecords');
-          await db.execute('''
-          CREATE TABLE $tableRecords (
-            $columnRecordId INTEGER PRIMARY KEY AUTOINCREMENT,
-            $columnRecordBankId INTEGER NOT NULL,
-            $columnRecordAnswer TEXT NOT NULL,
-            $columnRecordScore INTEGER NOT NULL,
-            $columnRecordDuration INTEGER NOT NULL,
-            $columnRecordTimestamp TEXT NOT NULL,
-            $columnRecordMode TEXT NOT NULL
-          )
-          ''');
-        } else if (oldVersion < 3) {
-          await db.execute(
-            'ALTER TABLE $tableQuestions ADD COLUMN $columnQuestionUpdatedAt TEXT NOT NULL DEFAULT ""',
-          );
-          await db.execute(
-            'ALTER TABLE $tableQuestions ADD COLUMN $columnQuestionIsFavorite INTEGER NOT NULL DEFAULT 0',
-          );
-          await db.execute(
-            'ALTER TABLE $tableQuestions ADD COLUMN $columnQuestionTakingTimes INTEGER NOT NULL DEFAULT 0',
-          );
-          await db.execute(
-            'ALTER TABLE $tableQuestions ADD COLUMN $columnQuestionLastTakenAt TEXT NOT NULL DEFAULT ""',
-          );
-          await db.execute(
-            'ALTER TABLE $tableQuestions ADD COLUMN $columnQuestionUncorrectTimes INTEGER NOT NULL DEFAULT 0',
-          );
-        } else if (oldVersion < 4) {
-          await db.execute(
-            'ALTER TABLE $tableRecords ADD COLUMN $columnRecordTotal INTEGER NOT NULL DEFAULT 0',
-          );
-          await db.execute(
-            'ALTER TABLE $tableRecords ADD COLUMN $columnRecordQuestionIds TEXT NOT NULL DEFAULT ""',
-          );
+        if (newVersion == 5) {
+          db.execute('DELETE FROM $tableRecords');
         }
       },
     );
@@ -203,6 +169,17 @@ class DatabaseHelper {
     return await db.insert(tableQuestions, question.toJson());
   }
 
+  // Question CRUD
+  Future<int> insertQuestions(List<Question> questions) async {
+    final db = await instance.database;
+    var batch = db.batch();
+    for (var question in questions) {
+      batch.insert(tableQuestions, question.toJson());
+    }
+    await batch.commit();
+    return questions.length;
+  }
+
   Future<List<Question>> getQuestionsByBank({
     int bankId = 0,
     bool withFavorites = false,
@@ -221,6 +198,7 @@ class DatabaseHelper {
       ${withFavorites ? 'AND $columnQuestionIsFavorite = 1' : ''}
       ${withoutTaken ? 'AND $columnQuestionTakingTimes = 0' : ''}
       ${onlyFailed ? 'AND $columnQuestionUncorrectTimes > 0' : ''}
+      ORDER BY $columnQuestionLastTakenAt DESC
       ''');
     return List.generate(maps.length, (i) {
       return Question.fromJson(maps[i]);
@@ -266,7 +244,7 @@ class DatabaseHelper {
     final db = await instance.database;
     final maps = await db.query(
       tableQuestions,
-      where: '$columnQuestionBankId IN (${ids.map((_) => '?').join(', ')})',
+      where: '$columnQuestionId IN (${ids.map((_) => '?').join(', ')})',
       whereArgs: ids,
     );
     return List.generate(maps.length, (i) {
@@ -282,7 +260,11 @@ class DatabaseHelper {
 
   Future<List<QuizRecord>> getAllRecords() async {
     final db = await instance.database;
-    final maps = await db.query(tableRecords);
+    final maps = await db.query(
+      tableRecords,
+      orderBy: '$columnRecordTimestamp DESC',
+      limit: 10,
+    );
     return List.generate(maps.length, (i) {
       return QuizRecord.fromJson(maps[i]);
     });

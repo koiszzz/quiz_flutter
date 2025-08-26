@@ -1,16 +1,65 @@
-# quiz_flutter
+# Quiz Flutter - 答题 App
 
-A new Flutter project.
+一个使用 Flutter 构建的现代化、功能丰富的答题 App。
 
-## Getting Started
+## 简介
 
-This project is a starting point for a Flutter application.
+Quiz Flutter 是一个开源的、跨平台的移动应用，旨在为用户提供一个灵活、强大的学习和自我测试工具。无论您是想为考试做准备，还是想学习新知识，Quiz Flutter 都能满足您的需求。
 
-A few resources to get you started if this is your first Flutter project:
+## 主要功能
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+*   **题库管理**:
+    *   创建、编辑和删除题库。
+    *   从 JSON 文件导入/导出题库，方便分享和备份。
+*   **多种答题模式**:
+    *   **练习模式**: 自由答题，随时查看答案和解析。
+    *   **考试模式**: 模拟真实考试环境，有时间限制，结束后评分。
+    *   **错题模式**: 专门练习之前答错的题目。
+    *   **收藏模式**: 练习您收藏的题目。
+*   **丰富的题型**:
+    *   单选题
+    *   多选题
+    *   判断题
+*   **答题统计**:
+    *   记录每次答题的分数、用时等。
+    *   （待开发）提供可视化的统计图表，分析学习进度。
+*   **个性化设置**:
+    *   （待开发）夜间模式。
+    *   自定义题目和选项的顺序。
+*   **错题回顾**:
+    *   答题结束后，可以查看所有答错的题目、您的答案和正确答案及解析。
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 待办事项 (TODO)
+
+- [ ] 用户认证系统 (邮箱/社交媒体登录)。
+- [ ] 题库和学习进度的云端同步。
+- [ ] 更多题型支持，例如填空题、简答题。
+- [ ] 更详细的统计数据和可视化图表。
+- [ ] 国际化和多语言支持。
+- [ ] 辅助功能 (Accessibility) 优化。
+- [ ] 添加单元测试和集成测试，确保代码质量。
+
+## 开始使用
+
+这是一个标准的 Flutter 项目。请确保您已经安装了 Flutter SDK。
+
+1.  克隆项目:
+    ```bash
+    git clone https://github.com/koiszzz/quiz_flutter.git
+    ```
+2.  进入项目目录:
+    ```bash
+    cd quiz_flutter
+    ```
+3.  获取依赖:
+    ```bash
+    flutter pub get
+    ```
+4.  运行 App:
+    ```bash
+    flutter run
+    ```
+
+## 贡献
+
+欢迎各种形式的贡献！如果您有任何建议或发现任何问题，请随时提交 Issue 或 Pull Request。

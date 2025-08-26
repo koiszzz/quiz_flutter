@@ -101,13 +101,17 @@ class _BankScreenState extends ConsumerState<BankScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('批量导入题库'),
-            content: const Center(
-              child: Column(
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('正在导入，请稍候...'),
-                ],
+            content: SizedBox(
+              height: 200,
+              child: const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('正在导入，请稍候...'),
+                  ],
+                ),
               ),
             ),
           );
@@ -167,7 +171,7 @@ class _BankScreenState extends ConsumerState<BankScreen> {
           .where((entry) => entry.value?.contains('选项') == true)
           .map((entry) => entry.key)
           .toList();
-
+      List<Question> questions = [];
       for (var i = 1; i < sheet.rows.length; i++) {
         final row = sheet.rows[i];
         if (row.every(
@@ -234,22 +238,24 @@ class _BankScreenState extends ConsumerState<BankScreen> {
             continue;
         }
 
-        final question = Question(
-          content: content,
-          type: type,
-          options: jsonEncode(options),
-          answer: encodedAnswer,
-          explanation: explanation,
-          tags: tags,
-          bankId: bankId,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          takingTimes: 0,
-          lastTakenAt: DateTime.now(),
-          uncorrectTimes: 0,
+        questions.add(
+          Question(
+            content: content,
+            type: type,
+            options: jsonEncode(options),
+            answer: encodedAnswer,
+            explanation: explanation,
+            tags: tags,
+            bankId: bankId,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            takingTimes: 0,
+            lastTakenAt: DateTime.now(),
+            uncorrectTimes: 0,
+          ),
         );
-        await ref.read(bankListProvider.notifier).addQuestion(question);
       }
+      await ref.read(bankListProvider.notifier).addQuestions(questions);
 
       if (context.mounted) {
         ScaffoldMessenger.of(context)

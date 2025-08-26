@@ -30,7 +30,7 @@ final class BankListProvider
   BankList create() => BankList();
 }
 
-String _$bankListHash() => r'0aeecedaaaeed55f906006bfa1cf657fec4b3ec6';
+String _$bankListHash() => r'659e5fd22e0801689f094521bd3fe3d1a73faa99';
 
 abstract class _$BankList extends $AsyncNotifier<List<QuestionBank>> {
   FutureOr<List<QuestionBank>> build();

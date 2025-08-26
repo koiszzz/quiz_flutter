@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quiz_flutter/providers/settings_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -46,7 +47,29 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
           ),
-          // TODO: Add other settings like font size, etc.
+          ListTile(
+            title: const Text('导入模板链接'),
+            trailing: IconButton(
+              icon: const Icon(Icons.link),
+              onPressed: () {
+                launchUrl(
+                  Uri.parse(
+                    'https://raw.githubusercontent.com/koiszzz/quiz_flutter/refs/heads/main/proto/template.xlsx',
+                  ),
+                );
+              },
+            ),
+          ),
+          ListTile(title: const Text('作者'), trailing: Text('koiszzz')),
+          ListTile(
+            title: const Text('项目地址'),
+            trailing: IconButton(
+              icon: const Icon(Icons.link),
+              onPressed: () {
+                launchUrl(Uri.parse('https://github.com/koiszzz/quiz_flutter'));
+              },
+            ),
+          ),
         ],
       ),
     );

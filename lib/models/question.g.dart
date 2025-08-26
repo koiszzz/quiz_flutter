@@ -23,6 +23,8 @@ _Question _$QuestionFromJson(Map<String, dynamic> json) => _Question(
   takingTimes: (json['taking_times'] as num).toInt(),
   lastTakenAt: const TimestampSerializer().fromJson(json['last_taken_at']),
   uncorrectTimes: (json['uncorrect_times'] as num).toInt(),
+  isWrong: json['isWrong'] as String? ?? "",
+  shuffleOptions: json['shuffleOptions'] as String? ?? "",
 );
 
 Map<String, dynamic> _$QuestionToJson(_Question instance) => <String, dynamic>{

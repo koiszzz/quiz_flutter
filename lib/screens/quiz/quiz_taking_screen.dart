@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:quiz_flutter/providers/quiz_provider.dart';
 import 'dart:convert';
 import 'package:quiz_flutter/models/models.dart';
+import 'package:quiz_flutter/screens/quiz/quiz_review_screen.dart';
 
 final optionPrefix = 'ABCDEFGHIJK';
 
@@ -139,6 +140,16 @@ class QuizTakingScreen extends ConsumerWidget {
   ) {
     final question = provider.currentQuestion!;
     final userAnswer = provider.userAnswers[question.id];
+    bool readyForShow = userAnswer != null;
+    if (question.type == '多选') {
+      final answer = jsonDecode(question.answer);
+      readyForShow =
+          (((userAnswer as List<dynamic>?) ?? <bool>[])
+              .cast<bool>()
+              .where((v) => v)
+              .length >=
+          (answer?.where((v) => v as bool).length ?? 0));
+    }
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
@@ -166,7 +177,7 @@ class QuizTakingScreen extends ConsumerWidget {
                   },
                 ),
               ),
-            if (provider.showAnswer && userAnswer != null)
+            if (provider.showAnswer && readyForShow)
               _buildAnswerView(context, question),
             const SizedBox(height: 24),
             Row(
@@ -304,7 +315,7 @@ class QuizTakingScreen extends ConsumerWidget {
                 correctAnswerText,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.green,
+                  color: Colors.green[300],
                 ),
               ),
             ),
@@ -335,6 +346,21 @@ class QuizTakingScreen extends ConsumerWidget {
           Text(
             '你的得分: $score / ${provider.questions.length}',
             style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => QuizReviewScreen(
+                    questions: provider.questions,
+                    userAnswers: provider.userAnswers,
+                  ),
+                ),
+              );
+            },
+            child: const Text('查看错题'),
           ),
           const SizedBox(height: 20),
           ElevatedButton(

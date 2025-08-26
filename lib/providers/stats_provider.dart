@@ -10,8 +10,6 @@ class StatsList extends _$StatsList {
   @override
   Future<List<QuizRecord>> build() async {
     final records = await _dbHelper.getAllRecords();
-    // Sort by date, newest first
-    records.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return records;
   }
 

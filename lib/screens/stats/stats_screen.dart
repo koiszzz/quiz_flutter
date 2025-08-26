@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quiz_flutter/providers/stats_provider.dart';
+import 'package:quiz_flutter/screens/stats/quiz_record_details_screen.dart';
 
 class StatsScreen extends ConsumerWidget {
   const StatsScreen({super.key});
@@ -28,70 +29,82 @@ class StatsScreen extends ConsumerWidget {
             itemCount: records.length,
             itemBuilder: (context, index) {
               final record = records[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ListTile(
-                      title: Text('得分: ${record.score} / ${record.total}'),
-                      subtitle: Text('日期: ${record.timestamp}'),
+              return InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          QuizRecordDetailsScreen(record: record),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        '正确率: ${(record.score / record.total * 100).toStringAsFixed(2)}%',
+                  );
+                },
+                child: Card(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        title: Text('得分: ${record.score} / ${record.total}'),
+                        subtitle: Text('日期: ${record.timestamp}'),
                       ),
-                    ),
-                    AspectRatio(
-                      aspectRatio: 1.7,
-                      child: Column(
-                        children: [
-                          // SizedBox(height: 28),
-                          Expanded(
-                            child: AspectRatio(
-                              aspectRatio: 1.3,
-                              child: PieChart(
-                                PieChartData(
-                                  sections: [
-                                    PieChartSectionData(
-                                      value: record.score.toDouble(),
-                                      color: Colors.green,
-                                      title: '正确',
-                                      radius: 50,
-                                      titleStyle: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          '正确率: ${(record.score / record.total * 100).toStringAsFixed(2)}%',
+                        ),
+                      ),
+                      AspectRatio(
+                        aspectRatio: 1.7,
+                        child: Column(
+                          children: [
+                            // SizedBox(height: 28),
+                            Expanded(
+                              child: AspectRatio(
+                                aspectRatio: 1.3,
+                                child: PieChart(
+                                  PieChartData(
+                                    sections: [
+                                      PieChartSectionData(
+                                        value: record.score.toDouble(),
+                                        color: Colors.green,
+                                        title: '正确',
+                                        radius: 50,
+                                        titleStyle: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    ),
-                                    PieChartSectionData(
-                                      value: (record.total - record.score)
-                                          .toDouble(),
-                                      color: Colors.red,
-                                      title: '错误',
-                                      radius: 50,
-                                      titleStyle: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                      PieChartSectionData(
+                                        value: (record.total - record.score)
+                                            .toDouble(),
+                                        color: Colors.red,
+                                        title: '错误',
+                                        radius: 50,
+                                        titleStyle: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                  sectionsSpace: 0,
-                                  centerSpaceRadius: 30,
+                                    ],
+                                    sectionsSpace: 0,
+                                    centerSpaceRadius: 30,
+                                  ),
+                                  duration: const Duration(
+                                    milliseconds: 150,
+                                  ), // Optional
+                                  curve: Curves.linear, // Optional
                                 ),
-                                duration: const Duration(
-                                  milliseconds: 150,
-                                ), // Optional
-                                curve: Curves.linear, // Optional
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },

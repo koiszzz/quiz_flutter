@@ -78,6 +78,7 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
           child: ListView(
             children: [
               TextFormField(
+                maxLines: null,
                 initialValue: _content,
                 decoration: const InputDecoration(labelText: '题干'),
                 validator: (value) => value!.isEmpty ? '请输入题干' : null,
@@ -123,11 +124,13 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
                   ),
                 ),
               TextFormField(
+                maxLines: null,
                 initialValue: _explanation,
                 decoration: const InputDecoration(labelText: '解析'),
                 onSaved: (value) => _explanation = value!,
               ),
               TextFormField(
+                maxLines: null,
                 initialValue: _tags,
                 decoration: const InputDecoration(labelText: '标签 (逗号分隔)'),
                 onSaved: (value) => _tags = value!,
@@ -149,6 +152,7 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
           children: [
             Expanded(
               child: TextFormField(
+                maxLines: null,
                 controller: _optionControllers[index],
                 decoration: InputDecoration(labelText: '选项 ${index + 1}'),
                 validator: (value) => value!.isEmpty ? '选项不能为空' : null,

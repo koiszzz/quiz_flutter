@@ -30,6 +30,7 @@ abstract class Question with _$Question {
     @JsonKey(name: 'last_taken_at')
     required DateTime lastTakenAt,
     @JsonKey(name: 'uncorrect_times') required int uncorrectTimes,
+    @JsonKey(includeToJson: false) @Default("") String shuffleOptions,
   }) = _Question;
 
   factory Question.fromJson(Map<String, dynamic> json) =>

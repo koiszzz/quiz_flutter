@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_flutter/providers/settings_provider.dart';
 import 'package:quiz_flutter/providers/stats_provider.dart';
@@ -176,6 +177,7 @@ class Quiz extends _$Quiz {
           question.copyWith(
             options: jsonEncode(shuffledOptions),
             answer: jsonEncode(shuffledAnswer),
+            shuffleOptions: jsonEncode(newIndices),
           ),
         );
       }
@@ -246,28 +248,76 @@ class Quiz extends _$Quiz {
     await _saveRecords();
   }
 
+  String _getAnswerStatus(Question question, dynamic userAnswer) {
+    if (userAnswer == null) {
+      return 'unanswered';
+    }
+
+    try {
+      final correctAnswer = jsonDecode(question.answer);
+
+      if (question.type == '单选' || question.type == '判断') {
+        return userAnswer == correctAnswer ? 'correct' : 'incorrect';
+      } else if (question.type == '多选') {
+        if (userAnswer is! List || correctAnswer is! List) {
+          return 'incorrect';
+        }
+        if (listEquals(userAnswer, correctAnswer)) {
+          return 'correct';
+        }
+
+        bool hasWrongChoice = false;
+        int correctChoices = 0;
+        for (int i = 0; i < correctAnswer.length; i++) {
+          if (correctAnswer[i] && !(userAnswer as List).asMap().containsKey(i)) {
+            // missed a correct answer
+          } else if (!correctAnswer[i] && (userAnswer as List).asMap().containsKey(i) && userAnswer[i]) {
+            hasWrongChoice = true;
+          } else if (correctAnswer[i] && (userAnswer as List).asMap().containsKey(i) && userAnswer[i]) {
+            correctChoices++;
+          }
+        }
+
+        if (hasWrongChoice) {
+          return 'incorrect';
+        }
+
+        if (correctChoices > 0) {
+          return 'partial';
+        } else {
+          return 'incorrect';
+        }
+      }
+    } catch (e) {
+      return 'incorrect';
+    }
+
+    return 'incorrect';
+  }
+
   Future<void> _saveRecords() async {
     final currentState = state.value;
     if (currentState == null) return;
-    String userAnswersJson = '{';
-    currentState.userAnswers.forEach((key, value) {
-      userAnswersJson += '"$key": "${value.toString()}",';
-    });
-    userAnswersJson =
-        '${userAnswersJson.substring(0, userAnswersJson.length - 1)}}';
 
+    final answersMap = <String, Map<String, String>>{};
     for (final Question q in currentState.questions) {
+      final status = _getAnswerStatus(q, currentState.userAnswers[q.id]);
+      answersMap[q.id.toString()] = {
+        'userAnswer': currentState.userAnswers[q.id]?.toString() ?? '',
+        'status': status,
+      };
+
       final questionUpdate = q.copyWith(
+        updatedAt: DateTime.now(),
         takingTimes: q.takingTimes + 1,
         lastTakenAt: DateTime.now(),
         uncorrectTimes:
-            (currentState.userAnswers[q.id] != null &&
-                !_isCorrect(q, currentState.userAnswers[q.id]))
-            ? q.uncorrectTimes + 1
-            : q.uncorrectTimes,
+            status != 'correct' ? q.uncorrectTimes + 1 : q.uncorrectTimes,
       );
       await _dbHelper.updateQuestion(questionUpdate);
     }
+
+    final userAnswersJson = jsonEncode(answersMap);
 
     final record = QuizRecord(
       bankId: currentState.quizConfig.bankId!,
