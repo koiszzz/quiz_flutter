@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$QuizRecord {
 
- int? get id;@JsonKey(name: 'bank_id') int get bankId; String get answers; int get score; int get duration; DateTime get timestamp; String get mode;
+ int? get id;@JsonKey(name: 'bank_id') int get bankId; String get answers; int get score; int get total; int get duration; DateTime get timestamp; String get mode;@JsonKey(name: 'question_ids') String get questionIds;
 /// Create a copy of QuizRecord
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $QuizRecordCopyWith<QuizRecord> get copyWith => _$QuizRecordCopyWithImpl<QuizRec
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is QuizRecord&&(identical(other.id, id) || other.id == id)&&(identical(other.bankId, bankId) || other.bankId == bankId)&&(identical(other.answers, answers) || other.answers == answers)&&(identical(other.score, score) || other.score == score)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.mode, mode) || other.mode == mode));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is QuizRecord&&(identical(other.id, id) || other.id == id)&&(identical(other.bankId, bankId) || other.bankId == bankId)&&(identical(other.answers, answers) || other.answers == answers)&&(identical(other.score, score) || other.score == score)&&(identical(other.total, total) || other.total == total)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.questionIds, questionIds) || other.questionIds == questionIds));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,bankId,answers,score,duration,timestamp,mode);
+int get hashCode => Object.hash(runtimeType,id,bankId,answers,score,total,duration,timestamp,mode,questionIds);
 
 @override
 String toString() {
-  return 'QuizRecord(id: $id, bankId: $bankId, answers: $answers, score: $score, duration: $duration, timestamp: $timestamp, mode: $mode)';
+  return 'QuizRecord(id: $id, bankId: $bankId, answers: $answers, score: $score, total: $total, duration: $duration, timestamp: $timestamp, mode: $mode, questionIds: $questionIds)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $QuizRecordCopyWith<$Res>  {
   factory $QuizRecordCopyWith(QuizRecord value, $Res Function(QuizRecord) _then) = _$QuizRecordCopyWithImpl;
 @useResult
 $Res call({
- int? id,@JsonKey(name: 'bank_id') int bankId, String answers, int score, int duration, DateTime timestamp, String mode
+ int? id,@JsonKey(name: 'bank_id') int bankId, String answers, int score, int total, int duration, DateTime timestamp, String mode,@JsonKey(name: 'question_ids') String questionIds
 });
 
 
@@ -65,15 +65,17 @@ class _$QuizRecordCopyWithImpl<$Res>
 
 /// Create a copy of QuizRecord
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? bankId = null,Object? answers = null,Object? score = null,Object? duration = null,Object? timestamp = null,Object? mode = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? bankId = null,Object? answers = null,Object? score = null,Object? total = null,Object? duration = null,Object? timestamp = null,Object? mode = null,Object? questionIds = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,bankId: null == bankId ? _self.bankId : bankId // ignore: cast_nullable_to_non_nullable
 as int,answers: null == answers ? _self.answers : answers // ignore: cast_nullable_to_non_nullable
 as String,score: null == score ? _self.score : score // ignore: cast_nullable_to_non_nullable
+as int,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
 as int,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as int,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
 as DateTime,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
+as String,questionIds: null == questionIds ? _self.questionIds : questionIds // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -159,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id, @JsonKey(name: 'bank_id')  int bankId,  String answers,  int score,  int duration,  DateTime timestamp,  String mode)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id, @JsonKey(name: 'bank_id')  int bankId,  String answers,  int score,  int total,  int duration,  DateTime timestamp,  String mode, @JsonKey(name: 'question_ids')  String questionIds)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _QuizRecord() when $default != null:
-return $default(_that.id,_that.bankId,_that.answers,_that.score,_that.duration,_that.timestamp,_that.mode);case _:
+return $default(_that.id,_that.bankId,_that.answers,_that.score,_that.total,_that.duration,_that.timestamp,_that.mode,_that.questionIds);case _:
   return orElse();
 
 }
@@ -180,10 +182,10 @@ return $default(_that.id,_that.bankId,_that.answers,_that.score,_that.duration,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id, @JsonKey(name: 'bank_id')  int bankId,  String answers,  int score,  int duration,  DateTime timestamp,  String mode)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id, @JsonKey(name: 'bank_id')  int bankId,  String answers,  int score,  int total,  int duration,  DateTime timestamp,  String mode, @JsonKey(name: 'question_ids')  String questionIds)  $default,) {final _that = this;
 switch (_that) {
 case _QuizRecord():
-return $default(_that.id,_that.bankId,_that.answers,_that.score,_that.duration,_that.timestamp,_that.mode);case _:
+return $default(_that.id,_that.bankId,_that.answers,_that.score,_that.total,_that.duration,_that.timestamp,_that.mode,_that.questionIds);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +202,10 @@ return $default(_that.id,_that.bankId,_that.answers,_that.score,_that.duration,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id, @JsonKey(name: 'bank_id')  int bankId,  String answers,  int score,  int duration,  DateTime timestamp,  String mode)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id, @JsonKey(name: 'bank_id')  int bankId,  String answers,  int score,  int total,  int duration,  DateTime timestamp,  String mode, @JsonKey(name: 'question_ids')  String questionIds)?  $default,) {final _that = this;
 switch (_that) {
 case _QuizRecord() when $default != null:
-return $default(_that.id,_that.bankId,_that.answers,_that.score,_that.duration,_that.timestamp,_that.mode);case _:
+return $default(_that.id,_that.bankId,_that.answers,_that.score,_that.total,_that.duration,_that.timestamp,_that.mode,_that.questionIds);case _:
   return null;
 
 }
@@ -215,16 +217,18 @@ return $default(_that.id,_that.bankId,_that.answers,_that.score,_that.duration,_
 @JsonSerializable()
 
 class _QuizRecord implements QuizRecord {
-   _QuizRecord({this.id, @JsonKey(name: 'bank_id') required this.bankId, this.answers = '', required this.score, required this.duration, required this.timestamp, required this.mode});
+   _QuizRecord({this.id, @JsonKey(name: 'bank_id') required this.bankId, this.answers = '', required this.score, required this.total, required this.duration, required this.timestamp, required this.mode, @JsonKey(name: 'question_ids') required this.questionIds});
   factory _QuizRecord.fromJson(Map<String, dynamic> json) => _$QuizRecordFromJson(json);
 
 @override final  int? id;
 @override@JsonKey(name: 'bank_id') final  int bankId;
 @override@JsonKey() final  String answers;
 @override final  int score;
+@override final  int total;
 @override final  int duration;
 @override final  DateTime timestamp;
 @override final  String mode;
+@override@JsonKey(name: 'question_ids') final  String questionIds;
 
 /// Create a copy of QuizRecord
 /// with the given fields replaced by the non-null parameter values.
@@ -239,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _QuizRecord&&(identical(other.id, id) || other.id == id)&&(identical(other.bankId, bankId) || other.bankId == bankId)&&(identical(other.answers, answers) || other.answers == answers)&&(identical(other.score, score) || other.score == score)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.mode, mode) || other.mode == mode));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _QuizRecord&&(identical(other.id, id) || other.id == id)&&(identical(other.bankId, bankId) || other.bankId == bankId)&&(identical(other.answers, answers) || other.answers == answers)&&(identical(other.score, score) || other.score == score)&&(identical(other.total, total) || other.total == total)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.questionIds, questionIds) || other.questionIds == questionIds));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,bankId,answers,score,duration,timestamp,mode);
+int get hashCode => Object.hash(runtimeType,id,bankId,answers,score,total,duration,timestamp,mode,questionIds);
 
 @override
 String toString() {
-  return 'QuizRecord(id: $id, bankId: $bankId, answers: $answers, score: $score, duration: $duration, timestamp: $timestamp, mode: $mode)';
+  return 'QuizRecord(id: $id, bankId: $bankId, answers: $answers, score: $score, total: $total, duration: $duration, timestamp: $timestamp, mode: $mode, questionIds: $questionIds)';
 }
 
 
@@ -259,7 +263,7 @@ abstract mixin class _$QuizRecordCopyWith<$Res> implements $QuizRecordCopyWith<$
   factory _$QuizRecordCopyWith(_QuizRecord value, $Res Function(_QuizRecord) _then) = __$QuizRecordCopyWithImpl;
 @override @useResult
 $Res call({
- int? id,@JsonKey(name: 'bank_id') int bankId, String answers, int score, int duration, DateTime timestamp, String mode
+ int? id,@JsonKey(name: 'bank_id') int bankId, String answers, int score, int total, int duration, DateTime timestamp, String mode,@JsonKey(name: 'question_ids') String questionIds
 });
 
 
@@ -276,15 +280,17 @@ class __$QuizRecordCopyWithImpl<$Res>
 
 /// Create a copy of QuizRecord
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? bankId = null,Object? answers = null,Object? score = null,Object? duration = null,Object? timestamp = null,Object? mode = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? bankId = null,Object? answers = null,Object? score = null,Object? total = null,Object? duration = null,Object? timestamp = null,Object? mode = null,Object? questionIds = null,}) {
   return _then(_QuizRecord(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int?,bankId: null == bankId ? _self.bankId : bankId // ignore: cast_nullable_to_non_nullable
 as int,answers: null == answers ? _self.answers : answers // ignore: cast_nullable_to_non_nullable
 as String,score: null == score ? _self.score : score // ignore: cast_nullable_to_non_nullable
+as int,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
 as int,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
 as int,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
 as DateTime,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
+as String,questionIds: null == questionIds ? _self.questionIds : questionIds // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

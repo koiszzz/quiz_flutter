@@ -26,9 +26,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   final _practiceMultipleController = TextEditingController(text: '0');
   final _practiceTrueFalseController = TextEditingController(text: '0');
   final _practiceDurationController = TextEditingController(text: '0');
-  bool _practiceShuffleQuestions = true;
+  bool _practiceShuffleQuestions = false;
   bool _practiceShuffleOptions = false;
-  bool _practiceWithoutTaken = false;
+  bool _practiceWithoutTaken = true;
 
   // Exam Mode State
   int? _examSelectedBankId;
@@ -100,13 +100,13 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       if (mode == 'practice') {
         _practiceSelectedBankId = bankId;
         _practiceSingleController.text =
-            ((_singleCount[bankId] ?? 0) > 10 ? 10 : _singleCount[bankId])
+            ((_singleCount[bankId] ?? 0) > 5 ? 5 : _singleCount[bankId])
                 .toString();
         _practiceMultipleController.text =
-            ((_multipleCount[bankId] ?? 0) > 5 ? 5 : _multipleCount[bankId])
+            ((_multipleCount[bankId] ?? 0) > 2 ? 2 : _multipleCount[bankId])
                 .toString();
         _practiceTrueFalseController.text =
-            ((_trueFalseCount[bankId] ?? 0) > 5 ? 5 : _trueFalseCount[bankId])
+            ((_trueFalseCount[bankId] ?? 0) > 3 ? 3 : _trueFalseCount[bankId])
                 .toString();
       } else {
         _examSelectedBankId = bankId;

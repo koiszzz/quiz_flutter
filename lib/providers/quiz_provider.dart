@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_flutter/providers/settings_provider.dart';
+import 'package:quiz_flutter/providers/stats_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:quiz_flutter/models/models.dart';
 import 'package:quiz_flutter/services/database_helper.dart';
@@ -82,7 +83,7 @@ class QuizState {
 }
 
 @riverpod
-class QuizList extends _$QuizList {
+class Quiz extends _$Quiz {
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   Timer? _timer;
 
@@ -123,8 +124,12 @@ class QuizList extends _$QuizList {
     final List<Question> allQuestions = await _dbHelper.getQuestionsByBank(
       bankId: config.bankId!,
       withFavorites: config.mode == 'favorites',
+      onlyFailed: config.mode == 'wrong',
       withoutTaken: config.withoutTaken,
     );
+    if (allQuestions.isEmpty) {
+      return allQuestions;
+    }
     List<Question> single = allQuestions.where((q) => q.type == '单选').toList();
     List<Question> multiple = allQuestions
         .where((q) => q.type == '多选')
@@ -203,6 +208,12 @@ class QuizList extends _$QuizList {
     }
   }
 
+  void goToQuestion(int index) {
+    if (index >= 0 && index < state.value!.questions.length) {
+      state = AsyncValue.data(state.value!.copyWith(currentIndex: index));
+    }
+  }
+
   Future<void> toggleCurrentFav() async {
     final currentQuestion = state.value?.currentQuestion;
     if (currentQuestion != null) {
@@ -257,15 +268,18 @@ class QuizList extends _$QuizList {
       );
       await _dbHelper.updateQuestion(questionUpdate);
     }
+
     final record = QuizRecord(
       bankId: currentState.quizConfig.bankId!,
       mode: currentState.quizConfig.mode,
       score: getScore(),
+      total: currentState.questions.length,
       duration: (DateTime.now().difference(currentState.startTime)).inSeconds,
       answers: userAnswersJson,
       timestamp: DateTime.now(),
+      questionIds: currentState.questions.map((q) => q.id).join(','),
     );
-    await _dbHelper.insertRecord(record);
+    await ref.read(statsListProvider.notifier).addRecord(record);
   }
 
   bool _isCorrect(Question question, dynamic userAnswer) {

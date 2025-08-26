@@ -80,6 +80,7 @@ final router = GoRouter(
               duration: int.tryParse(query['duration'] ?? '0') ?? 0,
               shuffleQuestions: query['shuffleQuestions'] == 'true',
               shuffleOptions: query['shuffleOptions'] == 'true',
+              withoutTaken: query['withoutTaken'] == 'true',
             );
 
             return QuizTakingScreen(config: config);

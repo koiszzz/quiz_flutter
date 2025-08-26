@@ -6,39 +6,38 @@ part of 'quiz_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-@ProviderFor(QuizList)
-const quizListProvider = QuizListFamily._();
+@ProviderFor(Quiz)
+const quizProvider = QuizFamily._();
 
-final class QuizListProvider
-    extends $AsyncNotifierProvider<QuizList, QuizState> {
-  const QuizListProvider._({
-    required QuizListFamily super.from,
+final class QuizProvider extends $AsyncNotifierProvider<Quiz, QuizState> {
+  const QuizProvider._({
+    required QuizFamily super.from,
     required QuizConfig super.argument,
   }) : super(
          retry: null,
-         name: r'quizListProvider',
+         name: r'quizProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$quizListHash();
+  String debugGetCreateSourceHash() => _$quizHash();
 
   @override
   String toString() {
-    return r'quizListProvider'
+    return r'quizProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  QuizList create() => QuizList();
+  Quiz create() => Quiz();
 
   @override
   bool operator ==(Object other) {
-    return other is QuizListProvider && other.argument == argument;
+    return other is QuizProvider && other.argument == argument;
   }
 
   @override
@@ -47,34 +46,34 @@ final class QuizListProvider
   }
 }
 
-String _$quizListHash() => r'd9a7700bc75b9e0bb40282d418442194190f553b';
+String _$quizHash() => r'ee6e82646488d733063648fcfd676c33fe65fa45';
 
-final class QuizListFamily extends $Family
+final class QuizFamily extends $Family
     with
         $ClassFamilyOverride<
-          QuizList,
+          Quiz,
           AsyncValue<QuizState>,
           QuizState,
           FutureOr<QuizState>,
           QuizConfig
         > {
-  const QuizListFamily._()
+  const QuizFamily._()
     : super(
         retry: null,
-        name: r'quizListProvider',
+        name: r'quizProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  QuizListProvider call(QuizConfig config) =>
-      QuizListProvider._(argument: config, from: this);
+  QuizProvider call(QuizConfig config) =>
+      QuizProvider._(argument: config, from: this);
 
   @override
-  String toString() => r'quizListProvider';
+  String toString() => r'quizProvider';
 }
 
-abstract class _$QuizList extends $AsyncNotifier<QuizState> {
+abstract class _$Quiz extends $AsyncNotifier<QuizState> {
   late final _$args = ref.$arg as QuizConfig;
   QuizConfig get config => _$args;
 

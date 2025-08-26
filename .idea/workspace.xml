@@ -5,16 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="908919b5-dea1-4cdc-b5b2-8decbaae861b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/question.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/question.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/question.freezed.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/question.freezed.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/question.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/question.g.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/common/routes/app_router.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/common/routes/app_router.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/quiz_record.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/quiz_record.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/quiz_record.freezed.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/quiz_record.freezed.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/quiz_record.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/quiz_record.g.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/providers/question_list_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/question_list_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/providers/question_list_provider.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/question_list_provider.g.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/providers/quiz_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/quiz_provider.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/providers/quiz_provider.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/quiz_provider.g.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/bank/add_edit_question_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/bank/add_edit_question_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/bank/bank_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/bank/bank_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/quiz/quiz_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/quiz/quiz_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/providers/stats_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/stats_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/providers/stats_provider.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/stats_provider.g.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/quiz/quiz_taking_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/quiz/quiz_taking_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/stats/stats_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/stats/stats_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/services/database_helper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/database_helper.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,7 +76,7 @@
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "io.flutter.reload.alreadyRun": "true",
-    "settings.editor.selected.configurable": "com.android.studio.ml.bot.mainConfigurable",
+    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.Shell Script",
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>

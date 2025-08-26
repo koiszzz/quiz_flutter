@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:path/path.dart';
 import 'package:quiz_flutter/models/models.dart';
 import 'package:sqflite/sqflite.dart';
@@ -5,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
   static const _databaseName = "QuizApp.db";
-  static const _databaseVersion = 3;
+  static const _databaseVersion = 4;
 
   // Tables
   static const tableBanks = 'banks';
@@ -39,9 +41,11 @@ class DatabaseHelper {
   static const columnRecordBankId = 'bank_id';
   static const columnRecordAnswer = 'answers';
   static const columnRecordScore = 'score';
+  static const columnRecordTotal = 'total';
   static const columnRecordDuration = 'duration';
   static const columnRecordTimestamp = 'timestamp';
   static const columnRecordMode = 'mode';
+  static const columnRecordQuestionIds = 'question_ids';
 
   // make this a singleton class
   DatabaseHelper._privateConstructor();
@@ -64,6 +68,7 @@ class DatabaseHelper {
       version: _databaseVersion,
       onCreate: _onCreate,
       onUpgrade: (db, oldVersion, newVersion) async {
+        log('当前系统数据库版本: $oldVersion => $newVersion');
         if (oldVersion < 2) {
           await db.execute('DROP TABLE $tableRecords');
           await db.execute('''
@@ -92,6 +97,13 @@ class DatabaseHelper {
           );
           await db.execute(
             'ALTER TABLE $tableQuestions ADD COLUMN $columnQuestionUncorrectTimes INTEGER NOT NULL DEFAULT 0',
+          );
+        } else if (oldVersion < 4) {
+          await db.execute(
+            'ALTER TABLE $tableRecords ADD COLUMN $columnRecordTotal INTEGER NOT NULL DEFAULT 0',
+          );
+          await db.execute(
+            'ALTER TABLE $tableRecords ADD COLUMN $columnRecordQuestionIds TEXT NOT NULL DEFAULT ""',
           );
         }
       },
@@ -133,9 +145,11 @@ class DatabaseHelper {
             $columnRecordBankId INTEGER NOT NULL,
             $columnRecordAnswer TEXT NOT NULL,
             $columnRecordScore INTEGER NOT NULL,
+            $columnRecordTotal INTEGER NOT NULL,
             $columnRecordDuration INTEGER NOT NULL,
             $columnRecordTimestamp TEXT NOT NULL,
-            $columnRecordMode TEXT NOT NULL
+            $columnRecordMode TEXT NOT NULL,
+            $columnRecordQuestionIds TEXT NOT NULL
           )
           ''');
   }
@@ -166,6 +180,16 @@ class DatabaseHelper {
 
   Future<int> deleteBank(int id) async {
     final db = await instance.database;
+    await db.delete(
+      tableQuestions,
+      where: '$columnQuestionBankId = ?',
+      whereArgs: [id],
+    );
+    await db.delete(
+      tableRecords,
+      where: '$columnRecordBankId = ?',
+      whereArgs: [id],
+    );
     return await db.delete(
       tableBanks,
       where: '$columnBankId = ?',
@@ -180,20 +204,24 @@ class DatabaseHelper {
   }
 
   Future<List<Question>> getQuestionsByBank({
-    required int bankId,
+    int bankId = 0,
     bool withFavorites = false,
     bool withoutTaken = false,
+    bool onlyFailed = false,
   }) async {
     final db = await instance.database;
-    final maps = await db.rawQuery(
-      '''
-      SELECT * FROM $tableQuestions
-      WHERE $columnQuestionBankId = ?
+    log('''      SELECT * FROM $tableQuestions
+      WHERE 1 = 1 ${bankId > 0 ? 'AND $columnQuestionBankId = $bankId' : ''}
       ${withFavorites ? 'AND $columnQuestionIsFavorite = 1' : ''}
       ${withoutTaken ? 'AND $columnQuestionTakingTimes = 0' : ''}
-      ''',
-      [bankId],
-    );
+      ${onlyFailed ? 'AND $columnQuestionUncorrectTimes > 0' : ''}''');
+    final maps = await db.rawQuery('''
+      SELECT * FROM $tableQuestions
+      WHERE 1 = 1 ${bankId > 0 ? 'AND $columnQuestionBankId = $bankId' : ''}
+      ${withFavorites ? 'AND $columnQuestionIsFavorite = 1' : ''}
+      ${withoutTaken ? 'AND $columnQuestionTakingTimes = 0' : ''}
+      ${onlyFailed ? 'AND $columnQuestionUncorrectTimes > 0' : ''}
+      ''');
     return List.generate(maps.length, (i) {
       return Question.fromJson(maps[i]);
     });

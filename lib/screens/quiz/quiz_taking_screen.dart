@@ -14,51 +14,122 @@ class QuizTakingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final quizListAsyncValue = ref.watch(quizListProvider(config));
+    final quizListAsyncValue = ref.watch(quizProvider(config));
 
     return switch (quizListAsyncValue) {
-      AsyncData(:final value) => Scaffold(
-        appBar: AppBar(
-          title: Text('${config.mode} 模式'),
-          actions: [
-            if (config.mode == 'exam')
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: Text(
-                    '${value.remainingTime.inMinutes.toString().padLeft(2, '0')}:${(value.remainingTime.inSeconds % 60).toString().padLeft(2, '0')}',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontFeatures: [const FontFeature.tabularFigures()],
-                    ),
+      AsyncData(:final value) =>
+        value.questions.isEmpty
+            ? Scaffold(
+                appBar: AppBar(title: Text('${config.mode} 模式')),
+                body: Center(
+                  child: Column(
+                    children: [
+                      const Text('当前考试没有题目，请选择模式或题库。'),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('返回'),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            value.currentQuestion != null
-                ? IconButton(
-                    icon: Icon(
-                      value.currentQuestion!.isFavorite
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color: value.currentQuestion!.isFavorite
-                          ? Colors.red[400]
-                          : null,
+              )
+            : Scaffold(
+                appBar: AppBar(
+                  title: Text('${config.mode} 模式'),
+                  actions: [
+                    if (config.mode == 'exam')
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 16.0),
+                          child: Text(
+                            '${value.remainingTime.inMinutes.toString().padLeft(2, '0')}:${(value.remainingTime.inSeconds % 60).toString().padLeft(2, '0')}',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  fontFeatures: [
+                                    const FontFeature.tabularFigures(),
+                                  ],
+                                ),
+                          ),
+                        ),
+                      ),
+                    value.currentQuestion != null && !value.quizFinished
+                        ? IconButton(
+                            icon: Icon(
+                              value.currentQuestion!.isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: value.currentQuestion!.isFavorite
+                                  ? Colors.red[400]
+                                  : null,
+                            ),
+                            onPressed: () {
+                              ref
+                                  .read(quizProvider(config).notifier)
+                                  .toggleCurrentFav();
+                            },
+                          )
+                        : const SizedBox.shrink(),
+                    IconButton(
+                      icon: const Icon(Icons.list_alt),
+                      onPressed: () {
+                        _showQuestionList(context, ref, value);
+                      },
                     ),
-                    onPressed: () {
-                      ref
-                          .read(quizListProvider(config).notifier)
-                          .toggleCurrentFav();
-                    },
-                  )
-                : const SizedBox.shrink(),
-          ],
-        ),
-        body: value.quizFinished
-            ? _buildResultView(context, ref, value)
-            : _buildQuestionView(context, ref, value),
-      ),
+                  ],
+                ),
+                body: value.quizFinished
+                    ? _buildResultView(context, ref, value)
+                    : _buildQuestionView(context, ref, value),
+              ),
       AsyncLoading() => const Center(child: CircularProgressIndicator()),
       _ => const Center(child: Text('加载失败')),
     };
+  }
+
+  void _showQuestionList(
+    BuildContext context,
+    WidgetRef ref,
+    QuizState provider,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return GridView.builder(
+          padding: const EdgeInsets.all(16.0),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 5,
+            childAspectRatio: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          itemCount: provider.questions.length,
+          itemBuilder: (context, index) {
+            final question = provider.questions[index];
+            final isAnswered = provider.userAnswers.containsKey(question.id);
+            return ElevatedButton(
+              onPressed: () {
+                ref.read(quizProvider(config).notifier).goToQuestion(index);
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(1.0),
+                ),
+                backgroundColor: isAnswered
+                    ? Colors.green[200]
+                    : Colors.red[300],
+                foregroundColor: Colors.white,
+              ),
+              child: Text(
+                '${index + 1}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Widget _buildQuestionView(
@@ -91,9 +162,7 @@ class QuizTakingScreen extends ConsumerWidget {
                 trailing: Switch(
                   value: provider.showAnswer,
                   onChanged: (newValue) {
-                    ref
-                        .read(quizListProvider(config).notifier)
-                        .toggleShowAnswer();
+                    ref.read(quizProvider(config).notifier).toggleShowAnswer();
                   },
                 ),
               ),
@@ -107,7 +176,7 @@ class QuizTakingScreen extends ConsumerWidget {
                   child: ElevatedButton(
                     onPressed: provider.currentIndex > 0
                         ? () => ref
-                              .read(quizListProvider(config).notifier)
+                              .read(quizProvider(config).notifier)
                               .preQuestion()
                         : null,
                     child: const Text('上一题'),
@@ -116,11 +185,12 @@ class QuizTakingScreen extends ConsumerWidget {
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: provider.userAnswers.containsKey(question.id)
-                        ? () => ref
-                              .read(quizListProvider(config).notifier)
-                              .nextQuestion()
-                        : null,
+                    onPressed:
+                        provider.currentIndex == provider.questions.length - 1
+                        ? () => _submitQuiz(context, ref, provider)
+                        : () => ref
+                              .read(quizProvider(config).notifier)
+                              .nextQuestion(),
                     child: Text(
                       provider.currentIndex == provider.questions.length - 1
                           ? '完成'
@@ -160,7 +230,7 @@ class QuizTakingScreen extends ConsumerWidget {
                 groupValue: userAnswer,
                 onChanged: (value) {
                   ref
-                      .read(quizListProvider(config).notifier)
+                      .read(quizProvider(config).notifier)
                       .answerQuestion(question.id!, value);
                 },
               ),
@@ -183,7 +253,7 @@ class QuizTakingScreen extends ConsumerWidget {
                 onChanged: (value) {
                   currentAnswers[index] = value!;
                   ref
-                      .read(quizListProvider(config).notifier)
+                      .read(quizProvider(config).notifier)
                       .answerQuestion(question.id!, currentAnswers);
                 },
               ),
@@ -255,7 +325,7 @@ class QuizTakingScreen extends ConsumerWidget {
     WidgetRef ref,
     QuizState provider,
   ) {
-    final score = ref.read(quizListProvider(config).notifier).getScore();
+    final score = ref.read(quizProvider(config).notifier).getScore();
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -274,5 +344,34 @@ class QuizTakingScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  void _submitQuiz(BuildContext context, WidgetRef ref, QuizState provider) {
+    final unansweredQuestions =
+        provider.questions.length - provider.userAnswers.length;
+    if (unansweredQuestions > 0) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('提示'),
+          content: Text('您还有 $unansweredQuestions 题未作答，确定要提交吗？'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('取消'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                ref.read(quizProvider(config).notifier).nextQuestion();
+              },
+              child: const Text('确定'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      ref.read(quizProvider(config).notifier).nextQuestion();
+    }
   }
 }

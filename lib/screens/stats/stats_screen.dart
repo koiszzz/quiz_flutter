@@ -1,8 +1,8 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quiz_flutter/providers/stats_provider.dart';
-import 'package:intl/intl.dart';
 
 class StatsScreen extends ConsumerWidget {
   const StatsScreen({super.key});
@@ -30,13 +30,68 @@ class StatsScreen extends ConsumerWidget {
               final record = records[index];
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: ListTile(
-                  leading: Icon(Icons.check_circle, color: Colors.green),
-                  title: Text('成绩: ${record.score}'),
-                  subtitle: Text(
-                    '时间: ${DateFormat('yyyy-MM-dd HH:mm').format(record.timestamp)}模式: ${record.mode}',
-                  ),
-                  isThreeLine: true,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                      title: Text('得分: ${record.score} / ${record.total}'),
+                      subtitle: Text('日期: ${record.timestamp}'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        '正确率: ${(record.score / record.total * 100).toStringAsFixed(2)}%',
+                      ),
+                    ),
+                    AspectRatio(
+                      aspectRatio: 1.7,
+                      child: Column(
+                        children: [
+                          // SizedBox(height: 28),
+                          Expanded(
+                            child: AspectRatio(
+                              aspectRatio: 1.3,
+                              child: PieChart(
+                                PieChartData(
+                                  sections: [
+                                    PieChartSectionData(
+                                      value: record.score.toDouble(),
+                                      color: Colors.green,
+                                      title: '正确',
+                                      radius: 50,
+                                      titleStyle: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    PieChartSectionData(
+                                      value: (record.total - record.score)
+                                          .toDouble(),
+                                      color: Colors.red,
+                                      title: '错误',
+                                      radius: 50,
+                                      titleStyle: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                  sectionsSpace: 0,
+                                  centerSpaceRadius: 30,
+                                ),
+                                duration: const Duration(
+                                  milliseconds: 150,
+                                ), // Optional
+                                curve: Curves.linear, // Optional
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               );
             },

@@ -13,7 +13,7 @@ class QuestionList extends _$QuestionList {
   @override
   Future<List<Question>> build(int bankId) async {
     log('hello question $bankId');
-    return _dbHelper.getQuestionsByBank(bankId);
+    return _dbHelper.getQuestionsByBank(bankId: bankId);
   }
 
   Future<void> addQuestion(Question question) async {

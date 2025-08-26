@@ -38,5 +38,7 @@ class BankList extends _$BankList {
 
   Future<void> addQuestion(Question question) async {
     await _dbHelper.insertQuestion(question);
+    ref.invalidateSelf();
+    await future;
   }
 }

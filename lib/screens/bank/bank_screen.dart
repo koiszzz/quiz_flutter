@@ -99,13 +99,16 @@ class _BankScreenState extends ConsumerState<BankScreen> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return const Center(
-            child: Column(
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('正在导入，请稍候...'),
-              ],
+          return AlertDialog(
+            title: Text('批量导入题库'),
+            content: const Center(
+              child: Column(
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('正在导入，请稍候...'),
+                ],
+              ),
             ),
           );
         },

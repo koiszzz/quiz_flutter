@@ -30,7 +30,7 @@ final class StatsListProvider
   StatsList create() => StatsList();
 }
 
-String _$statsListHash() => r'873acff8c3e21b838a0190ca9a330007a393909f';
+String _$statsListHash() => r'64a6e9647fa1f5ab66052f3057f2dec945f25193';
 
 abstract class _$StatsList extends $AsyncNotifier<List<QuizRecord>> {
   FutureOr<List<QuizRecord>> build();
