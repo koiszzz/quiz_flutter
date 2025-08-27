@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quiz_flutter/l10n/app_localizations.dart';
 
 class PageNoFoundScreen extends ConsumerWidget {
   const PageNoFoundScreen({super.key});
@@ -8,11 +9,11 @@ class PageNoFoundScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('页面未找到')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.pageNotFoundTitle)),
       body: Center(
         child: ElevatedButton(
           onPressed: () => context.go('/'),
-          child: const Text('返回'),
+          child: Text(AppLocalizations.of(context)!.backBtn),
         ),
       ),
     );

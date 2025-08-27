@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quiz_flutter/l10n/app_localizations.dart';
 
 class StudyScreen extends StatelessWidget {
   const StudyScreen({super.key});
@@ -12,15 +13,15 @@ class StudyScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: const Text('学习辅助'),
+        title: Text(AppLocalizations.of(context)!.study),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           _buildStudyCard(
             context,
-            '错题复习',
-            '回顾所有答错的题目',
+            AppLocalizations.of(context)!.quizReviewTitle,
+            AppLocalizations.of(context)!.reviewWrongQuestions,
             Icons.assignment_late,
             () {
               context.go(
@@ -28,12 +29,17 @@ class StudyScreen extends StatelessWidget {
               );
             },
           ),
-          _buildStudyCard(context, '收藏夹练习', '练习所有收藏的题目', Icons.favorite, () {
-            context.go(
-              '/quiz/taking/favorites/0?single=10&multiple=5&trueFalse=5&duration=&shuffleQuestions=false&shuffleOptions=false',
-            );
-          }),
-          // TODO: Add other study features like "解析查看"
+          _buildStudyCard(
+            context,
+            AppLocalizations.of(context)!.favorite,
+            AppLocalizations.of(context)!.favoriteReviewMsg,
+            Icons.favorite,
+            () {
+              context.go(
+                '/quiz/taking/favorites/0?single=10&multiple=5&trueFalse=5&duration=&shuffleQuestions=false&shuffleOptions=false',
+              );
+            },
+          ),
         ],
       ),
     );

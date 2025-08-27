@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quiz_flutter/l10n/app_localizations.dart';
 import 'package:quiz_flutter/providers/quiz_provider.dart';
 import 'dart:convert';
 import 'package:quiz_flutter/models/models.dart';
@@ -21,15 +22,19 @@ class QuizTakingScreen extends ConsumerWidget {
       AsyncData(:final value) =>
         value.questions.isEmpty
             ? Scaffold(
-                appBar: AppBar(title: Text('${config.mode} 模式')),
+                appBar: AppBar(
+                  title: Text(
+                    AppLocalizations.of(context)!.modeTranslate(config.mode),
+                  ),
+                ),
                 body: Center(
                   child: Column(
                     children: [
-                      const Text('当前考试没有题目，请选择模式或题库。'),
+                      Text(AppLocalizations.of(context)!.noQuestionForQuizMsg),
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('返回'),
+                        child: Text(AppLocalizations.of(context)!.backBtn),
                       ),
                     ],
                   ),
@@ -37,7 +42,9 @@ class QuizTakingScreen extends ConsumerWidget {
               )
             : Scaffold(
                 appBar: AppBar(
-                  title: Text('${config.mode} 模式'),
+                  title: Text(
+                    AppLocalizations.of(context)!.modeTranslate(config.mode),
+                  ),
                   actions: [
                     if (config.mode == 'exam')
                       Center(
@@ -84,7 +91,7 @@ class QuizTakingScreen extends ConsumerWidget {
                     : _buildQuestionView(context, ref, value),
               ),
       AsyncLoading() => const Center(child: CircularProgressIndicator()),
-      _ => const Center(child: Text('加载失败')),
+      _ => Center(child: Text(AppLocalizations.of(context)!.loadFailMsg)),
     };
   }
 
@@ -141,7 +148,7 @@ class QuizTakingScreen extends ConsumerWidget {
     final question = provider.currentQuestion!;
     final userAnswer = provider.userAnswers[question.id];
     bool readyForShow = userAnswer != null;
-    if (question.type == '多选') {
+    if (question.type == 'multiple') {
       final answer = jsonDecode(question.answer);
       readyForShow =
           (((userAnswer as List<dynamic>?) ?? <bool>[])
@@ -157,7 +164,7 @@ class QuizTakingScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              '题目 ${provider.currentIndex + 1}/${provider.questions.length}',
+              '${AppLocalizations.of(context)!.question} ${provider.currentIndex + 1}/${provider.questions.length}',
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: 8),
@@ -169,7 +176,7 @@ class QuizTakingScreen extends ConsumerWidget {
             _buildOptions(context, ref, provider, question),
             if (config.mode == 'practice')
               ListTile(
-                title: const Text('是否显示答案'),
+                title: Text(AppLocalizations.of(context)!.showAnswerLabel),
                 trailing: Switch(
                   value: provider.showAnswer,
                   onChanged: (newValue) {
@@ -190,7 +197,7 @@ class QuizTakingScreen extends ConsumerWidget {
                               .read(quizProvider(config).notifier)
                               .preQuestion()
                         : null,
-                    child: const Text('上一题'),
+                    child: Text(AppLocalizations.of(context)!.prevQuestionBtn),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -204,8 +211,8 @@ class QuizTakingScreen extends ConsumerWidget {
                               .nextQuestion(),
                     child: Text(
                       provider.currentIndex == provider.questions.length - 1
-                          ? '完成'
-                          : '下一题',
+                          ? AppLocalizations.of(context)!.finish
+                          : AppLocalizations.of(context)!.next,
                     ),
                   ),
                 ),
@@ -227,8 +234,8 @@ class QuizTakingScreen extends ConsumerWidget {
     final userAnswer = provider.userAnswers[question.id];
 
     switch (question.type) {
-      case '单选':
-      case '判断':
+      case 'single':
+      case 'judge':
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -248,7 +255,7 @@ class QuizTakingScreen extends ConsumerWidget {
             );
           },
         );
-      case '多选':
+      case 'multiple':
         final currentAnswers =
             (userAnswer as List<dynamic>?)?.cast<bool>() ??
             List.filled(options.length, false);
@@ -272,7 +279,7 @@ class QuizTakingScreen extends ConsumerWidget {
           },
         );
       default:
-        return const Text('不支持的题目类型');
+        return Text(AppLocalizations.of(context)!.unsupportedQuestionType);
     }
   }
 
@@ -281,13 +288,13 @@ class QuizTakingScreen extends ConsumerWidget {
     final options = jsonDecode(question.options) as List;
     String correctAnswerText;
     switch (question.type) {
-      case '单选':
-      case '判断':
+      case 'single':
+      case 'judge':
         int correctIndex = correctAnswer as int;
         correctAnswerText =
             '${optionPrefix[correctIndex]}: ${options[correctIndex]}';
         break;
-      case '多选':
+      case 'multiple':
         final correctIndices = (correctAnswer as List)
             .asMap()
             .entries
@@ -299,7 +306,7 @@ class QuizTakingScreen extends ConsumerWidget {
             .join('\n');
         break;
       default:
-        correctAnswerText = '未知';
+        correctAnswerText = 'Unknown';
     }
     return Card(
       margin: const EdgeInsets.only(top: 16),
@@ -308,7 +315,10 @@ class QuizTakingScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('正确答案: ', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              AppLocalizations.of(context)!.correctAnswerLabel,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
@@ -322,7 +332,10 @@ class QuizTakingScreen extends ConsumerWidget {
             if (question.explanation != null &&
                 question.explanation!.isNotEmpty) ...[
               const SizedBox(height: 8),
-              Text('解析: ', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                AppLocalizations.of(context)!.analysisLabel,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               Text(question.explanation!),
             ],
           ],
@@ -341,10 +354,13 @@ class QuizTakingScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('答题完成!', style: Theme.of(context).textTheme.headlineMedium),
+          Text(
+            AppLocalizations.of(context)!.quizCompleteMsg,
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
           const SizedBox(height: 20),
           Text(
-            '你的得分: $score / ${provider.questions.length}',
+            '${AppLocalizations.of(context)!.scoreInfo}: $score / ${provider.questions.length}',
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 20),
@@ -360,12 +376,12 @@ class QuizTakingScreen extends ConsumerWidget {
                 ),
               );
             },
-            child: const Text('查看错题'),
+            child: Text(AppLocalizations.of(context)!.viewWrongQuestionBtn),
           ),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () => context.go('/'),
-            child: const Text('返回主页'),
+            child: Text(AppLocalizations.of(context)!.backToHomeBtn),
           ),
         ],
       ),
@@ -379,19 +395,21 @@ class QuizTakingScreen extends ConsumerWidget {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('提示'),
-          content: Text('您还有 $unansweredQuestions 题未作答，确定要提交吗？'),
+          title: Text(AppLocalizations.of(context)!.promptTitle),
+          content: Text(
+            'You have $unansweredQuestions unanswered questions, are you sure to submit?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('取消'),
+              child: Text(AppLocalizations.of(context)!.cancelBtn),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 ref.read(quizProvider(config).notifier).nextQuestion();
               },
-              child: const Text('确定'),
+              child: Text(AppLocalizations.of(context)!.confirmBtn),
             ),
           ],
         ),

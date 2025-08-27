@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:quiz_flutter/l10n/app_localizations.dart';
 import 'package:quiz_flutter/models/models.dart';
 import 'dart:convert';
 
@@ -22,12 +22,10 @@ class QuizReviewScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('错题回顾'),
+        title: Text(AppLocalizations.of(context)!.quizReviewTitle),
       ),
       body: wrongQuestions.isEmpty
-          ? const Center(
-              child: Text('恭喜你，全部回答正确！'),
-            )
+          ? Center(child: Text(AppLocalizations.of(context)!.allCorrectMsg))
           : ListView.builder(
               padding: const EdgeInsets.all(16.0),
               itemCount: wrongQuestions.length,
@@ -42,7 +40,7 @@ class QuizReviewScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '题目 ${index + 1}: ${question.content}',
+                          '${AppLocalizations.of(context)!.question} ${index + 1}: ${question.content}',
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 16),
@@ -51,7 +49,10 @@ class QuizReviewScreen extends StatelessWidget {
                             question.explanation!.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           const Divider(),
-                          Text('解析: ', style: Theme.of(context).textTheme.titleLarge),
+                          Text(
+                            '${AppLocalizations.of(context)!.analysisLabel}: ',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
                           Text(question.explanation!),
                         ],
                       ],
@@ -66,9 +67,9 @@ class QuizReviewScreen extends StatelessWidget {
   bool _isCorrect(Question question, dynamic userAnswer) {
     try {
       final correctAnswer = jsonDecode(question.answer);
-      if (question.type == '单选' || question.type == '判断') {
+      if (question.type == 'single' || question.type == 'judge') {
         return userAnswer == correctAnswer;
-      } else if (question.type == '多选') {
+      } else if (question.type == 'multiple') {
         if (userAnswer is! List || correctAnswer is! List) return false;
         if (userAnswer.length != correctAnswer.length) return false;
         for (int i = 0; i < userAnswer.length; i++) {
@@ -83,7 +84,10 @@ class QuizReviewScreen extends StatelessWidget {
   }
 
   Widget _buildOptionsReview(
-      BuildContext context, Question question, dynamic userAnswer) {
+    BuildContext context,
+    Question question,
+    dynamic userAnswer,
+  ) {
     final options = jsonDecode(question.options) as List;
     final correctAnswer = jsonDecode(question.answer);
     const optionPrefix = 'ABCDEFGHIJK';
@@ -97,23 +101,25 @@ class QuizReviewScreen extends StatelessWidget {
         bool isCorrect = false;
         bool isUserChoice = false;
 
-        if (question.type == '单选' || question.type == '判断') {
+        if (question.type == 'single' || question.type == 'judge') {
           isCorrect = (index == correctAnswer);
           isUserChoice = (index == userAnswer);
-        } else if (question.type == '多选') {
+        } else if (question.type == 'multiple') {
           isCorrect = correctAnswer[index];
           isUserChoice = userAnswer[index];
         }
 
         return Card(
-          color: isCorrect ? Colors.green[100] : (isUserChoice ? Colors.red[100] : null),
+          color: isCorrect
+              ? Colors.green[300]
+              : (isUserChoice ? Colors.red[300] : null),
           child: ListTile(
             title: Text(optionText),
             trailing: isCorrect
                 ? const Icon(Icons.check_circle, color: Colors.green)
                 : (isUserChoice
-                    ? const Icon(Icons.cancel, color: Colors.red)
-                    : null),
+                      ? const Icon(Icons.cancel, color: Colors.red)
+                      : null),
           ),
         );
       },

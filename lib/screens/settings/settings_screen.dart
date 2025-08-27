@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:quiz_flutter/l10n/app_localizations.dart';
 import 'package:quiz_flutter/providers/settings_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,19 +18,49 @@ class SettingsScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: const Text('设置'),
+        title: Text(AppLocalizations.of(context)!.settings),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           ListTile(
-            title: const Text('主题模式'),
+            title: Text(AppLocalizations.of(context)!.language),
+            trailing: DropdownButton<String>(
+              value: systemSettings['language'],
+              items: [
+                DropdownMenuItem(
+                  value: 'en',
+                  child: Text(AppLocalizations.of(context)!.english),
+                ),
+                DropdownMenuItem(
+                  value: 'zh',
+                  child: Text(AppLocalizations.of(context)!.chinese),
+                ),
+              ],
+              onChanged: (String? newLanguage) {
+                if (newLanguage != null) {
+                  ref.read(settingsProvider.notifier).setLanguage(newLanguage);
+                }
+              },
+            ),
+          ),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.themeModeLabel),
             trailing: DropdownButton<ThemeMode>(
               value: systemSettings['theme'],
-              items: const [
-                DropdownMenuItem(value: ThemeMode.system, child: Text('跟随系统')),
-                DropdownMenuItem(value: ThemeMode.light, child: Text('亮色模式')),
-                DropdownMenuItem(value: ThemeMode.dark, child: Text('暗色模式')),
+              items: [
+                DropdownMenuItem(
+                  value: ThemeMode.system,
+                  child: Text(AppLocalizations.of(context)!.themeModeSystem),
+                ),
+                DropdownMenuItem(
+                  value: ThemeMode.light,
+                  child: Text(AppLocalizations.of(context)!.themeModeLight),
+                ),
+                DropdownMenuItem(
+                  value: ThemeMode.dark,
+                  child: Text(AppLocalizations.of(context)!.themeModeDark),
+                ),
               ],
               onChanged: (ThemeMode? newMode) {
                 if (newMode != null) {
@@ -39,7 +70,9 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           ListTile(
-            title: const Text('练习模式是否显示答案'),
+            title: Text(
+              AppLocalizations.of(context)!.showAnswerInPracticeLabel,
+            ),
             trailing: Switch(
               value: systemSettings['showAnswer'],
               onChanged: (value) {
@@ -48,7 +81,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           ListTile(
-            title: const Text('导入模板链接'),
+            title: Text(AppLocalizations.of(context)!.importTemplateLabel),
             trailing: IconButton(
               icon: const Icon(Icons.link),
               onPressed: () {
@@ -60,9 +93,12 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
           ),
-          ListTile(title: const Text('作者'), trailing: Text('koiszzz')),
           ListTile(
-            title: const Text('项目地址'),
+            title: Text(AppLocalizations.of(context)!.authorLabel),
+            trailing: Text(AppLocalizations.of(context)!.authorName),
+          ),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.projectAddressLabel),
             trailing: IconButton(
               icon: const Icon(Icons.link),
               onPressed: () {

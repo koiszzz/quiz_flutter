@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quiz_flutter/l10n/app_localizations.dart';
 import 'package:quiz_flutter/models/models.dart';
 import 'package:quiz_flutter/services/database_helper.dart';
 import 'dart:convert';
@@ -24,7 +25,10 @@ class _QuizRecordDetailsScreenState extends State<QuizRecordDetailsScreen> {
   }
 
   Future<List<Question>> _loadQuestions() async {
-    final questionIds = widget.record.questionIds.split(',').map(int.parse).toList();
+    final questionIds = widget.record.questionIds
+        .split(',')
+        .map(int.parse)
+        .toList();
     return await _dbHelper.getQuestionsByIds(questionIds);
   }
 
@@ -33,18 +37,22 @@ class _QuizRecordDetailsScreenState extends State<QuizRecordDetailsScreen> {
     final answers = jsonDecode(widget.record.answers) as Map<String, dynamic>;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('答题详情'),
-      ),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.examDetail)),
       body: FutureBuilder<List<Question>>(
         future: _questionsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('加载题目失败: ${snapshot.error}'));
+            return Center(
+              child: Text(
+                '${AppLocalizations.of(context)!.loadFailMsg}: ${snapshot.error}',
+              ),
+            );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('没有找到题目'));
+            return Center(
+              child: Text(AppLocalizations.of(context)!.noQuestionFoundMsg),
+            );
           }
 
           final questions = snapshot.data!;
@@ -53,7 +61,8 @@ class _QuizRecordDetailsScreenState extends State<QuizRecordDetailsScreen> {
             itemCount: questions.length,
             itemBuilder: (context, index) {
               final question = questions[index];
-              final answerInfo = answers[question.id.toString()] as Map<String, dynamic>;
+              final answerInfo =
+                  answers[question.id.toString()] as Map<String, dynamic>;
               final userAnswer = answerInfo['userAnswer'];
               final status = answerInfo['status'] ?? 'unanswered';
 
@@ -65,16 +74,24 @@ class _QuizRecordDetailsScreenState extends State<QuizRecordDetailsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '题目 ${index + 1}: ${question.content}',
+                        '${AppLocalizations.of(context)!.question} ${index + 1}: ${question.content}',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 16),
-                      _buildOptionsReview(context, question, userAnswer, status),
+                      _buildOptionsReview(
+                        context,
+                        question,
+                        userAnswer,
+                        status,
+                      ),
                       if (question.explanation != null &&
                           question.explanation!.isNotEmpty) ...[
                         const SizedBox(height: 8),
                         const Divider(),
-                        Text('解析: ', style: Theme.of(context).textTheme.titleLarge),
+                        Text(
+                          '${AppLocalizations.of(context)!.analysisLabel}: ',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
                         Text(question.explanation!),
                       ],
                     ],
@@ -89,7 +106,11 @@ class _QuizRecordDetailsScreenState extends State<QuizRecordDetailsScreen> {
   }
 
   Widget _buildOptionsReview(
-      BuildContext context, Question question, dynamic userAnswer, String status) {
+    BuildContext context,
+    Question question,
+    dynamic userAnswer,
+    String status,
+  ) {
     final options = jsonDecode(question.options) as List;
     final correctAnswer = jsonDecode(question.answer);
     const optionPrefix = 'ABCDEFGHIJK';
@@ -110,10 +131,10 @@ class _QuizRecordDetailsScreenState extends State<QuizRecordDetailsScreen> {
           parsedUserAnswer = userAnswer;
         }
 
-        if (question.type == '单选' || question.type == '判断') {
+        if (question.type == 'single' || question.type == 'judge') {
           isCorrect = (index == correctAnswer);
           isUserChoice = (index.toString() == parsedUserAnswer.toString());
-        } else if (question.type == '多选') {
+        } else if (question.type == 'multiple') {
           isCorrect = correctAnswer[index];
           if (parsedUserAnswer is List && parsedUserAnswer.length > index) {
             isUserChoice = parsedUserAnswer[index];
@@ -124,31 +145,28 @@ class _QuizRecordDetailsScreenState extends State<QuizRecordDetailsScreen> {
         Widget? trailingIcon;
 
         if (isCorrect) {
-          cardColor = Colors.green[100];
+          cardColor = Colors.green[300];
           trailingIcon = const Icon(Icons.check_circle, color: Colors.green);
         } else if (isUserChoice) {
-            switch (status) {
-              case 'incorrect':
-                cardColor = Colors.red[100];
-                trailingIcon = const Icon(Icons.cancel, color: Colors.red);
-                break;
-              case 'partial':
-                cardColor = Colors.orange[100];
-                trailingIcon = const Icon(Icons.error, color: Colors.orange);
-                break;
-            }
+          switch (status) {
+            case 'incorrect':
+              cardColor = Colors.red[300];
+              trailingIcon = const Icon(Icons.cancel, color: Colors.red);
+              break;
+            case 'partial':
+              cardColor = Colors.orange[300];
+              trailingIcon = const Icon(Icons.error, color: Colors.orange);
+              break;
+          }
         }
-        
+
         if (status == 'unanswered') {
-          cardColor = Colors.grey[200];
+          cardColor = Colors.grey[500];
         }
 
         return Card(
           color: cardColor,
-          child: ListTile(
-            title: Text(optionText),
-            trailing: trailingIcon,
-          ),
+          child: ListTile(title: Text(optionText), trailing: trailingIcon),
         );
       },
     );

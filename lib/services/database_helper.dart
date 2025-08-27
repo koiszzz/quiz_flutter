@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
   static const _databaseName = "QuizApp.db";
-  static const _databaseVersion = 5;
+  static const _databaseVersion = 6;
 
   // Tables
   static const tableBanks = 'banks';
@@ -71,6 +71,17 @@ class DatabaseHelper {
         log('当前系统数据库版本: $oldVersion => $newVersion');
         if (newVersion == 5) {
           db.execute('DELETE FROM $tableRecords');
+        }
+        if (newVersion == 6) {
+          db.update(tableQuestions, {
+            columnQuestionType: 'multiple',
+          }, where: "$columnQuestionType = '多选'");
+          db.update(tableQuestions, {
+            columnQuestionType: 'single',
+          }, where: "$columnQuestionType = '单选'");
+          db.update(tableQuestions, {
+            columnQuestionType: 'judge',
+          }, where: "$columnQuestionType = '判断'");
         }
       },
     );

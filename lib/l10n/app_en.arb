@@ -1,0 +1,574 @@
+{
+  "@@locale": "en",
+  "appName": "QUIZ",
+  "@appName": {
+    "description": "The name of the application."
+  },
+  "bank": "BANK",
+  "@bank": {
+    "description": "Label for the 'Bank' or 'Question Bank' feature."
+  },
+  "bankManage": "BANK MANAGE",
+  "@bankManage": {
+    "description": "Title for the bank management screen."
+  },
+  "addBank": "ADD NEW BANK",
+  "@addBank": {
+    "description": "Button text for adding a new question bank."
+  },
+  "addBankName": "bank name",
+  "@addBankName": {
+    "description": "Placeholder or label for the bank name input field."
+  },
+  "addBankDesc": "bank description",
+  "@addBankDesc": {
+    "description": "Placeholder or label for the bank description input field."
+  },
+  "addBtn": "ADD",
+  "@addBtn": {
+    "description": "Generic 'Add' button text."
+  },
+  "cancelBtn": "CANCEL",
+  "@cancelBtn": {
+    "description": "Generic 'Cancel' button text."
+  },
+  "question": "QUESTION",
+  "@question": {
+    "description": "Label for the 'Question' feature."
+  },
+  "addQuestionTitle": "title",
+  "@addQuestionTitle": {
+    "description": "Label for the question title/text input field."
+  },
+  "addQuestionType": "type",
+  "@addQuestionType": {
+    "description": "Label for the question type selection (e.g., single choice, multiple choice)."
+  },
+  "addQuestionOptionLabel": "Options & Answer",
+  "@addQuestionOptionLabel": {
+    "description": "Label for the section where options and answers are defined for a question."
+  },
+  "addQuestionOption": "option",
+  "@addQuestionOption": {
+    "description": "Placeholder or label for a single choice/option input field."
+  },
+  "addQuestionAnswer": "answer",
+  "@addQuestionAnswer": {
+    "description": "Label or placeholder for the correct answer input field."
+  },
+  "addQuestionAnalysis": "analysis",
+  "@addQuestionAnalysis": {
+    "description": "Label or placeholder for the question's explanation or analysis."
+  },
+  "addQuestionTag": "tag",
+  "@addQuestionTag": {
+    "description": "Label or placeholder for tags associated with a question."
+  },
+  "mode": "MODE",
+  "@mode": {
+    "description": "Label for the 'Mode' or 'Quiz Mode' feature."
+  },
+  "modePratice": "PRACTICE",
+  "@modePratice": {
+    "description": "Text for the 'Practice' mode."
+  },
+  "modePraticeInfo": "Practice by order or randomly",
+  "@modePraticeInfo": {
+    "description": "Description for the 'Practice' mode."
+  },
+  "modeExam": "EXAM",
+  "@modeExam": {
+    "description": "Text for the 'Exam' mode."
+  },
+  
+  "modeExamInfo": "Time limit",
+  "@modeExamInfo": {
+    "description": "Description for the 'Exam' mode."
+  },
+  "modeBank": "choose bank",
+  "@modeBank": {
+    "description": "Label for the bank selection in quiz mode settings."
+  },
+  "modeSingle": "single choise",
+  "@modeSingle": {
+    "description": "Text for 'single choice' question type."
+  },
+  "modeMultiple": "multiple choise",
+  "@modeMultiple": {
+    "description": "Text for 'multiple choice' question type."
+  },
+  "modeJudge": "true or false",
+  "@modeJudge": {
+    "description": "Text for 'true or false' question type."
+  },
+  "modeQuestionShuffle": "question shuffle",
+  "@modeQuestionShuffle": {
+    "description": "Label for the 'shuffle questions' option."
+  },
+  "modeOptionShuffle": "option shuffle",
+  "@modeOptionShuffle": {
+    "description": "Label for the 'shuffle options' option."
+  },
+  "modeWithoutTaken": "without taken",
+  "@modeWithoutTaken": {
+    "description": "Label for the option to exclude already answered questions."
+  },
+  "modeStartBtn": "start",
+  "@modeStartBtn": {
+    "description": "Button text to start a quiz from the mode selection screen."
+  },
+  "study": "STUDY",
+  "@study": {
+    "description": "Navigation tab label for 'Study'."
+  },
+  "stats": "STATS",
+  "@stats": {
+    "description": "Navigation tab label for 'Statistics'."
+  },
+  "settings": "SETTINGS",
+  "@settings": {
+    "description": "Navigation tab label for 'Settings'."
+  },
+  "bankEmptyMsg": "bank is empty, please add one",
+  "@bankEmptyMsg": {
+    "description": "Message shown when the question bank list is empty."
+  },
+  "bankRemoveMsg": "bank removed",
+  "@bankRemoveMsg": {
+    "description": "Confirmation message (e.g., in a snackbar) shown after a bank is successfully removed."
+  },
+  "questionRemovedMsg": "question removed",
+  "@questionRemovedMsg": {
+    "description": "Confirmation message shown after a question is successfully removed."
+  },
+  "bankBatchImport": "batch import",
+  "@bankBatchImport": {
+    "description": "Button or label for the batch import feature."
+  },
+  "importWaitingMsg": "batch importing, please wait",
+  "@importWaitingMsg": {
+    "description": "Message shown while a batch import is in progress."
+  },
+  "excelEmptyMsg": "excel is empty",
+  "@excelEmptyMsg": {
+    "description": "Error message shown when the imported Excel file is empty."
+  },
+  "trueStr": "true",
+  "@trueStr": {
+    "description": "The string representing the boolean value 'true'."
+  },
+  "falseStr": "false",
+  "@falseStr": {
+    "description": "The string representing the boolean value 'false'."
+  },
+  "importSuccessMsg": "importing success",
+  "@importSuccessMsg": {
+    "description": "Message shown after a successful import."
+  },
+  "addOptionBtn": "add option",
+  "@addOptionBtn": {
+    "description": "Button text to add a new option to a question."
+  },
+  "setAnswerMsg": "please set answer",
+  "@setAnswerMsg": {
+    "description": "Error or prompt message telling the user to set an answer for a question."
+  },
+  "unexpectedErrorMsg": "Oops, something unexpected happened",
+  "@unexpectedErrorMsg": {
+    "description": "A generic error message for unexpected issues."
+  },
+  "excelFormatErrorMsg": "Excel format error, must include \"title (required)\", \"type\", \"answer (required)\"",
+  "@excelFormatErrorMsg": {
+    "description": "Error message detailing the required format for an Excel import file."
+  },
+  "questionBankTitle": "Question Bank",
+  "@questionBankTitle": {
+    "description": "Title for the Question Bank screen."
+  },
+  "noQuestionMsg": "No questions available.",
+  "@noQuestionMsg": {
+    "description": "Message displayed when there are no questions in a selected bank."
+  },
+  "pageNotFoundTitle": "Page Not Found",
+  "@pageNotFoundTitle": {
+    "description": "Title for the 404 or page not found screen."
+  },
+  "backBtn": "BACK",
+  "@backBtn": {
+    "description": "Generic 'Back' button text."
+  },
+  "quizReviewTitle": "Review Wrong Questions",
+  "@quizReviewTitle": {
+    "description": "Title for the screen where users review their wrong answers."
+  },
+  "reviewWrongQuestions": "Review all wrong questions",
+  "@reviewWrongQuestions": {
+    "description": "Button or label to start reviewing all wrong questions from a quiz."
+  },
+  "allCorrectMsg": "Congratulations, all correct!",
+  "@allCorrectMsg": {
+    "description": "Message shown when the user answers all questions correctly in a quiz or review session."
+  },
+  "noBankForQuizMsg": "No question bank available, please create one first.",
+  "@noBankForQuizMsg": {
+    "description": "Message shown when a user tries to start a quiz but has no question banks created."
+  },
+  "noQuestionForQuizMsg": "No questions in current quiz, please select a mode or bank.",
+  "@noQuestionForQuizMsg": {
+    "description": "Message shown when the selected bank/mode for a quiz has no questions."
+  },
+  "loadFailMsg": "Load failed",
+  "@loadFailMsg": {
+    "description": "Generic message indicating a failed loading attempt."
+  },
+  "showAnswerLabel": "Show Answer",
+  "@showAnswerLabel": {
+    "description": "Label for a button, checkbox, or switch to show the correct answer."
+  },
+  "prevQuestionBtn": "Prev",
+  "@prevQuestionBtn": {
+    "description": "Button text to go to the previous question."
+  },
+  "unsupportedQuestionType": "Unsupported question type",
+  "@unsupportedQuestionType": {
+    "description": "Error message for an unsupported or unknown question type."
+  },
+  "correctAnswerLabel": "Correct Answer: ",
+  "@correctAnswerLabel": {
+    "description": "Label preceding the display of the correct answer."
+  },
+  "analysisLabel": "Analysis: ",
+  "@analysisLabel": {
+    "description": "Label preceding the display of the question's analysis/explanation."
+  },
+  "quizCompleteMsg": "Quiz Complete!",
+  "@quizCompleteMsg": {
+    "description": "Message shown on the report screen when a quiz is completed."
+  },
+  "viewWrongQuestionBtn": "Review Wrong",
+  "@viewWrongQuestionBtn": {
+    "description": "Button to view/review wrong questions after a quiz is complete."
+  },
+  "backToHomeBtn": "Back to Home",
+  "@backToHomeBtn": {
+    "description": "Button to navigate back to the main home screen."
+  },
+  "promptTitle": "Prompt",
+  "@promptTitle": {
+    "description": "Default title for a generic dialog or prompt."
+  },
+  "confirmBtn": "OK",
+  "@confirmBtn": {
+    "description": "Generic 'OK' or 'Confirm' button text, often used in dialogs."
+  },
+  "themeModeLabel": "Theme Mode",
+  "@themeModeLabel": {
+    "description": "Label for the theme mode setting (System, Light, Dark)."
+  },
+  "themeModeSystem": "System",
+  "@themeModeSystem": {
+    "description": "Option for 'System' theme mode, which follows the OS setting."
+  },
+  "themeModeLight": "Light",
+  "@themeModeLight": {
+    "description": "Option for 'Light' theme mode."
+  },
+  "themeModeDark": "Dark",
+  "@themeModeDark": {
+    "description": "Option for 'Dark' theme mode."
+  },
+  "showAnswerInPracticeLabel": "Show answer in practice mode",
+  "@showAnswerInPracticeLabel": {
+    "description": "Label for the setting to automatically show answers during practice mode."
+  },
+  "importTemplateLabel": "Import template link",
+  "@importTemplateLabel": {
+    "description": "Label for the link to download the import template file."
+  },
+  "authorLabel": "Author",
+  "@authorLabel": {
+    "description": "Label for 'Author' in the 'About' section."
+  },
+  "authorName": "koiszzz",
+  "@authorName": {
+    "description": "The name of the application author."
+  },
+  "projectAddressLabel": "Project Address",
+  "@projectAddressLabel": {
+    "description": "Label for 'Project Address' (e.g., GitHub link) in the 'About' section."
+  },
+  "quizDetailsTitle": "Quiz Details",
+  "@quizDetailsTitle": {
+    "description": "Title for the screen showing details of a past quiz record."
+  },
+  "noQuestionFoundMsg": "No questions found",
+  "@noQuestionFoundMsg": {
+    "description": "Message when a search or filter yields no questions."
+  },
+  "noQuizRecordMsg": "No quiz records yet.",
+  "@noQuizRecordMsg": {
+    "description": "Message displayed on the stats/history screen when there are no past quiz records."
+  },
+  "questionBank": "Question Bank",
+  "@questionBank": {
+    "description": "A common label or title for 'Question Bank'."
+  },
+  "addQuestion": "Add Question",
+  "@addQuestion": {
+    "description": "Button or title for the 'Add Question' screen."
+  },
+  "editQuestion": "Edit Question",
+  "@editQuestion": {
+    "description": "Button or title for the 'Edit Question' screen."
+  },
+  "okBtn": "OK",
+  "@okBtn": {
+    "description": "Generic 'OK' button text."
+  },
+  "questionTitleLabel": "title",
+  "@questionTitleLabel": {
+    "description": "Label for the question title field in a form."
+  },
+  "questionTypeLabel": "type",
+  "@questionTypeLabel": {
+    "description": "Label for the question type field in a form."
+  },
+  "questionAnswerLabel": "answer",
+  "@questionAnswerLabel": {
+    "description": "Label for the question answer field in a form."
+  },
+  "questionAnalysisLabel": "analysis",
+  "@questionAnalysisLabel": {
+    "description": "Label for the question analysis/explanation field in a form."
+  },
+  "questionTagLabel": "tag",
+  "@questionTagLabel": {
+    "description": "Label for the question tag field in a form."
+  },
+  "questionOptionsLabel": "options",
+  "@questionOptionsLabel": {
+    "description": "Label for the question options section in a form."
+  },
+  "deleteBtn": "Delete",
+  "@deleteBtn": {
+    "description": "Generic 'Delete' button text."
+  },
+  "deleteConfirmMsg": "Are you sure to delete?",
+  "@deleteConfirmMsg": {
+    "description": "Confirmation message shown in a dialog before deleting an item."
+  },
+  "saveBtn": "Save",
+  "@saveBtn": {
+    "description": "Generic 'Save' button text."
+  },
+  "addChoiceOption": "Add Option",
+  "@addChoiceOption": {
+    "description": "Button text to add a new choice option when creating/editing a question."
+  },
+  "answerLabel": "Answer",
+  "@answerLabel": {
+    "description": "Generic label for 'Answer'."
+  },
+  "optionLabel": "Option",
+  "@optionLabel": {
+    "description": "Generic label for 'Option'."
+  },
+  "quizConfig": "Quiz Config",
+  "@quizConfig": {
+    "description": "Title for the quiz configuration/settings screen."
+  },
+  "selectBank": "Select Bank",
+  "@selectBank": {
+    "description": "Label prompting the user to select a question bank."
+  },
+  "questionType": "Question Type",
+  "@questionType": {
+    "description": "Label for 'Question Type'."
+  },
+  "shuffleQuestions": "Shuffle Questions",
+  "@shuffleQuestions": {
+    "description": "Label for the 'Shuffle Questions' option in quiz settings."
+  },
+  "shuffleOptions": "Shuffle Options",
+  "@shuffleOptions": {
+    "description": "Label for the 'Shuffle Options' option in quiz settings."
+  },
+  "noRepeatCorrect": "No Repeat Correct",
+  "@noRepeatCorrect": {
+    "description": "Label for an option to not repeat correctly answered questions."
+  },
+  "start": "Start",
+  "@start": {
+    "description": "Generic 'Start' button text."
+  },
+  "submit": "Submit",
+  "@submit": {
+    "description": "Button text to submit an answer during a quiz."
+  },
+  "next": "Next",
+  "@next": {
+    "description": "Button text to go to the next question."
+  },
+  "finish": "Finish",
+  "@finish": {
+    "description": "Button text to finish the quiz."
+  },
+  "correct": "Correct",
+  "@correct": {
+    "description": "Text indicating a correct answer."
+  },
+  "wrong": "Wrong",
+  "@wrong": {
+    "description": "Text indicating a wrong answer."
+  },
+  "noAnswer": "No Answer",
+  "@noAnswer": {
+    "description": "Text indicating that no answer was given for a question."
+  },
+  "viewAnalysis": "View Analysis",
+  "@viewAnalysis": {
+    "description": "Button or link text to view the explanation for a question."
+  },
+  "hideAnalysis": "Hide Analysis",
+  "@hideAnalysis": {
+    "description": "Button or link text to hide the explanation for a question."
+  },
+  "quizReport": "Quiz Report",
+  "@quizReport": {
+    "description": "Title for the quiz report/summary screen."
+  },
+  "totalQuestions": "Total",
+  "@totalQuestions": {
+    "description": "Label for the total number of questions in a quiz report."
+  },
+  "correctCount": "Correct",
+  "@correctCount": {
+    "description": "Label for the count of correctly answered questions in a quiz report."
+  },
+  "wrongCount": "Wrong",
+  "@wrongCount": {
+    "description": "Label for the count of incorrectly answered questions in a quiz report."
+  },
+  "accuracy": "Accuracy",
+  "@accuracy": {
+    "description": "Label for the accuracy percentage in a quiz report."
+  },
+  "review": "Review",
+  "@review": {
+    "description": "Button or label for 'Review' action."
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Button or label to 'Retry' a quiz."
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Navigation label for the 'Home' screen."
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Label for the language setting."
+  },
+  "english": "English",
+  "@english": {
+    "description": "The name of the English language."
+  },
+  "chinese": "Chinese",
+  "@chinese": {
+    "description": "The name of the Chinese language."
+  },
+  "feedback": "Feedback",
+  "@feedback": {
+    "description": "Label for 'Feedback' option or screen in settings."
+  },
+  "about": "About",
+  "@about": {
+    "description": "Label for 'About' option or screen in settings."
+  },
+  "version": "Version",
+  "@version": {
+    "description": "Label for the application version number."
+  },
+  "checkUpdate": "Check Update",
+  "@checkUpdate": {
+    "description": "Button or label to check for application updates."
+  },
+  "noRecords": "No Records",
+  "@noRecords": {
+    "description": "Generic message shown when a list of records (e.g., history) is empty."
+  },
+  "quizTime": "Time",
+  "@quizTime": {
+    "description": "Label for the time taken to complete a quiz."
+  },
+  "score": "Score",
+  "@score": {
+    "description": "Label for the score."
+  },
+  "details": "Details",
+  "@details": {
+    "description": "Label for 'Details' button or link."
+  },
+  "noMistakes": "No Mistakes",
+  "@noMistakes": {
+    "description": "Message shown on a review screen when there are no incorrect answers to show."
+  },
+  "favorite": "Favorite",
+  "@favorite": {
+    "description": "Label for the 'Favorite' feature or button to mark a question as a favorite."
+  },
+  "favoriteReviewMsg": "Review all favorite questions",
+  "@favoriteReviewMsg": {
+    "description": "Description for the action of reviewing all favorite questions."
+  },
+  "date": "Date",
+  "@date": {
+    "description": "Label for 'Date'."
+  },
+  "commaInfo": "comma separated",
+  "@commaInfo": {
+    "description": "Instruction indicating that multiple items should be separated by commas."
+  },
+  "count": "Count",
+  "@count": {
+    "description": "count"
+  },
+  "max": "Max",
+  "@max": {
+    "description": "Label for 'Max'."
+  },
+  "duration": "Duration",
+  "@duration": {
+    "description": "Label for 'Duration'."
+  },
+  "minutes": "Minutes",
+  "@minutes": {
+    "description": "Label for 'Minutes'."
+  },
+  "modeTranslate": "{mode, select, practice {PRACTICE} exam {EXAM} wrong {WRONG} favorite {FAVORITE} other {UNKNOWN}} MODE",
+  "@modeTranslate": {
+    "description": "Translation for different quiz modes.",
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "typeLabel": "{type, select, single {single choice} multiple {multiple choice} judge {true/false} other {unknown}}",
+  "@typeLabel": {
+    "description": "Translation for different question types.",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "scoreInfo": "Your Score",
+  "@scoreInfo": {
+    "description": "Label for displaying the user's score."
+  },
+  "examDetail": "Exam Detail",
+  "@examDetail": {
+    "description": "Label for the exam detail screen."
+  }
+}

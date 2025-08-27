@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:quiz_flutter/providers/settings_provider.dart';
 import 'package:quiz_flutter/providers/stats_provider.dart';
@@ -131,12 +130,14 @@ class Quiz extends _$Quiz {
     if (allQuestions.isEmpty) {
       return allQuestions;
     }
-    List<Question> single = allQuestions.where((q) => q.type == '单选').toList();
+    List<Question> single = allQuestions
+        .where((q) => q.type == 'single')
+        .toList();
     List<Question> multiple = allQuestions
-        .where((q) => q.type == '多选')
+        .where((q) => q.type == 'multiple')
         .toList();
     List<Question> trueFalse = allQuestions
-        .where((q) => q.type == '判断')
+        .where((q) => q.type == 'judge')
         .toList();
 
     if (config.shuffleQuestions) {
@@ -153,7 +154,7 @@ class Quiz extends _$Quiz {
     if (config.shuffleOptions) {
       final List<Question> shuffleds = [];
       for (final question in selectedQuestions) {
-        if (question.type == '判断') {
+        if (question.type == 'judge') {
           shuffleds.add(question); // No options to shuffle for true/false
           continue;
         }
@@ -167,10 +168,10 @@ class Quiz extends _$Quiz {
             .map((i) => originalOptions[i])
             .toList();
         dynamic shuffledAnswer;
-        if (question.type == '单选') {
+        if (question.type == 'single') {
           final originalAnswer = jsonDecode(question.answer);
           shuffledAnswer = newIndices[originalAnswer];
-        } else if (question.type == '多选') {
+        } else if (question.type == 'multiple') {
           shuffledAnswer = [for (final fi in newIndices) originalAnswer[fi]];
         }
         shuffleds.add(
@@ -256,9 +257,9 @@ class Quiz extends _$Quiz {
     try {
       final correctAnswer = jsonDecode(question.answer);
 
-      if (question.type == '单选' || question.type == '判断') {
+      if (question.type == 'single' || question.type == 'judge') {
         return userAnswer == correctAnswer ? 'correct' : 'incorrect';
-      } else if (question.type == '多选') {
+      } else if (question.type == 'multiple') {
         if (userAnswer is! List || correctAnswer is! List) {
           return 'incorrect';
         }
@@ -269,11 +270,15 @@ class Quiz extends _$Quiz {
         bool hasWrongChoice = false;
         int correctChoices = 0;
         for (int i = 0; i < correctAnswer.length; i++) {
-          if (correctAnswer[i] && !(userAnswer as List).asMap().containsKey(i)) {
+          if (correctAnswer[i] && !(userAnswer).asMap().containsKey(i)) {
             // missed a correct answer
-          } else if (!correctAnswer[i] && (userAnswer as List).asMap().containsKey(i) && userAnswer[i]) {
+          } else if (!correctAnswer[i] &&
+              (userAnswer).asMap().containsKey(i) &&
+              userAnswer[i]) {
             hasWrongChoice = true;
-          } else if (correctAnswer[i] && (userAnswer as List).asMap().containsKey(i) && userAnswer[i]) {
+          } else if (correctAnswer[i] &&
+              (userAnswer).asMap().containsKey(i) &&
+              userAnswer[i]) {
             correctChoices++;
           }
         }
@@ -311,8 +316,9 @@ class Quiz extends _$Quiz {
         updatedAt: DateTime.now(),
         takingTimes: q.takingTimes + 1,
         lastTakenAt: DateTime.now(),
-        uncorrectTimes:
-            status != 'correct' ? q.uncorrectTimes + 1 : q.uncorrectTimes,
+        uncorrectTimes: status != 'correct'
+            ? q.uncorrectTimes + 1
+            : q.uncorrectTimes,
       );
       await _dbHelper.updateQuestion(questionUpdate);
     }
@@ -335,9 +341,9 @@ class Quiz extends _$Quiz {
   bool _isCorrect(Question question, dynamic userAnswer) {
     try {
       final correctAnswer = jsonDecode(question.answer);
-      if (question.type == '单选' || question.type == '判断') {
+      if (question.type == 'single' || question.type == 'judge') {
         return userAnswer == correctAnswer;
-      } else if (question.type == '多选') {
+      } else if (question.type == 'multiple') {
         if (userAnswer is! List || correctAnswer is! List) return false;
         return listEquals(userAnswer, correctAnswer);
       }

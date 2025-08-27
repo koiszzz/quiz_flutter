@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as p;
+import 'package:quiz_flutter/l10n/app_localizations.dart';
 import 'package:quiz_flutter/models/models.dart';
 import 'package:quiz_flutter/providers/bank_list_provider.dart';
 
@@ -32,7 +33,7 @@ class _BankScreenState extends ConsumerState<BankScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: const Text('题库管理'),
+        title: Text(AppLocalizations.of(context)!.bankManage),
       ),
       body: switch (bankList) {
         AsyncData(:final value) =>
@@ -56,7 +57,11 @@ class _BankScreenState extends ConsumerState<BankScreen> {
                             ScaffoldMessenger.of(context)
                               ..hideCurrentSnackBar()
                               ..showSnackBar(
-                                const SnackBar(content: Text('题库已删除')),
+                                SnackBar(
+                                  content: Text(
+                                    AppLocalizations.of(context)!.bankRemoveMsg,
+                                  ),
+                                ),
                               );
                           }
                         },
@@ -64,8 +69,8 @@ class _BankScreenState extends ConsumerState<BankScreen> {
                     );
                   },
                 )
-              : const Center(child: Text('还没有题库，快添加一个吧！')),
-        AsyncError() => const Text('Oops, something unexpected happened'),
+              : Center(child: Text(AppLocalizations.of(context)!.bankEmptyMsg)),
+        AsyncError() => Text(AppLocalizations.of(context)!.unexpectedErrorMsg),
         _ => const CircularProgressIndicator(),
       },
       floatingActionButton: Column(
@@ -100,16 +105,16 @@ class _BankScreenState extends ConsumerState<BankScreen> {
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('批量导入题库'),
+            title: Text(AppLocalizations.of(context)!.bankBatchImport),
             content: SizedBox(
               height: 200,
-              child: const Center(
+              child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     CircularProgressIndicator(),
                     SizedBox(height: 16),
-                    Text('正在导入，请稍候...'),
+                    Text(AppLocalizations.of(context)!.importWaitingMsg),
                   ],
                 ),
               ),
@@ -129,7 +134,11 @@ class _BankScreenState extends ConsumerState<BankScreen> {
         if (context.mounted) {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
-            ..showSnackBar(const SnackBar(content: Text('Excel文件为空')));
+            ..showSnackBar(
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.excelEmptyMsg),
+              ),
+            );
         }
         return;
       }
@@ -230,8 +239,16 @@ class _BankScreenState extends ConsumerState<BankScreen> {
             encodedAnswer = jsonEncode(answers);
             break;
           case '判断':
-            options = ['正确', '错误'];
-            encodedAnswer = jsonEncode(rawAnswer == '正确' ? 0 : 1);
+            options = [
+              // ignore: use_build_context_synchronously
+              AppLocalizations.of(context)!.trueStr,
+              // ignore: use_build_context_synchronously
+              AppLocalizations.of(context)!.falseStr,
+            ];
+            encodedAnswer = jsonEncode(
+              // ignore: use_build_context_synchronously
+              rawAnswer == AppLocalizations.of(context)!.trueStr ? 0 : 1,
+            );
             break;
           default:
             // 不支持的类型，跳过
@@ -260,7 +277,11 @@ class _BankScreenState extends ConsumerState<BankScreen> {
       if (context.mounted) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
-          ..showSnackBar(const SnackBar(content: Text('导入成功')));
+          ..showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.importWaitingMsg),
+            ),
+          );
       }
     } finally {
       if (context.mounted) {
@@ -278,24 +299,28 @@ class _BankScreenState extends ConsumerState<BankScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('添加新题库'),
+          title: Text(AppLocalizations.of(context)!.addBank),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: '题库名称'),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.addBankName,
+                ),
               ),
               TextField(
                 controller: descriptionController,
-                decoration: const InputDecoration(labelText: '描述'),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.addBankDesc,
+                ),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('取消'),
+              child: Text(AppLocalizations.of(context)!.cancelBtn),
             ),
             TextButton(
               onPressed: () async {
@@ -311,7 +336,7 @@ class _BankScreenState extends ConsumerState<BankScreen> {
                   }
                 }
               },
-              child: const Text('添加'),
+              child: Text(AppLocalizations.of(context)!.addBtn),
             ),
           ],
         );

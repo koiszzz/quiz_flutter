@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quiz_flutter/common/routes/app_router.dart';
 import 'package:quiz_flutter/providers/settings_provider.dart';
+import 'l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -17,6 +19,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Quiz App',
+      locale: Locale(systemSettings['language'] ?? 'en'),
       theme: ThemeData(
         brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
@@ -38,6 +41,16 @@ class MyApp extends ConsumerWidget {
       ),
       themeMode: systemSettings['theme'],
       routerConfig: router,
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('zh'), // Chinese
+        Locale('en'), // English
+      ],
     );
   }
 }

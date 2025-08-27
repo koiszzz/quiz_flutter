@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quiz_flutter/l10n/app_localizations.dart';
 import 'package:quiz_flutter/models/models.dart';
 import 'package:quiz_flutter/providers/question_list_provider.dart';
 import 'dart:convert';
@@ -22,6 +23,7 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
   late String _type;
   late String _explanation;
   late String _tags;
+  bool initData = false;
 
   List<TextEditingController> _optionControllers = [];
   // For single choice
@@ -29,12 +31,12 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
   // For multiple choice
   List<bool> _multipleChoiceAnswers = [];
 
-  final List<String> _questionTypes = ['单选', '多选', '判断'];
+  final List<String> _questionTypes = ['single', 'multiple', 'judge'];
 
   @override
   void initState() {
     super.initState();
-    _type = widget.question?.type ?? _questionTypes.first;
+    _type = widget.question?.type ?? _questionTypes!.first;
     _content = widget.question?.content ?? '';
     _explanation = widget.question?.explanation ?? '';
     _tags = widget.question?.tags ?? '';
@@ -45,9 +47,9 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
           .map((o) => TextEditingController(text: o.toString()))
           .toList();
       final answer = jsonDecode(widget.question!.answer);
-      if (_type == '单选' || _type == '判断') {
+      if (_type == 'single' || _type == 'judge') {
         _singleChoiceAnswerIndex = answer == null ? 0 : answer as int;
-      } else if (_type == '多选') {
+      } else if (_type == 'multiple') {
         _multipleChoiceAnswers = (answer as List)
             .map((a) => a as bool)
             .toList();
@@ -63,7 +65,11 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.question == null ? '添加题目' : '编辑题目'),
+        title: Text(
+          widget.question == null
+              ? AppLocalizations.of(context)!.addQuestion
+              : AppLocalizations.of(context)!.editQuestion,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
@@ -80,26 +86,36 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
               TextFormField(
                 maxLines: null,
                 initialValue: _content,
-                decoration: const InputDecoration(labelText: '题干'),
-                validator: (value) => value!.isEmpty ? '请输入题干' : null,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.questionTitleLabel,
+                ),
+                validator: (value) => value!.isEmpty
+                    ? AppLocalizations.of(context)!.setAnswerMsg
+                    : null,
                 onSaved: (value) => _content = value!,
               ),
               DropdownButtonFormField<String>(
                 value: _type,
-                decoration: const InputDecoration(labelText: '题目类型'),
-                items: _questionTypes.map((String type) {
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.questionTypeLabel,
+                ),
+                items: _questionTypes!.map((String type) {
                   return DropdownMenuItem<String>(
                     value: type,
-                    child: Text(type),
+                    child: Text(AppLocalizations.of(context)!.typeLabel(type)),
                   );
                 }).toList(),
                 onChanged: (value) {
                   setState(() {
                     _type = value!;
-                    if (_type == '判断') {
+                    if (_type == 'judge') {
                       _optionControllers = [
-                        TextEditingController(text: '正确'),
-                        TextEditingController(text: '错误'),
+                        TextEditingController(
+                          text: AppLocalizations.of(context)!.trueStr,
+                        ),
+                        TextEditingController(
+                          text: AppLocalizations.of(context)!.falseStr,
+                        ),
                       ];
                       _multipleChoiceAnswers = [false, false];
                     }
@@ -107,14 +123,17 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
                 },
               ),
               const SizedBox(height: 20),
-              Text('选项和答案', style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                AppLocalizations.of(context)!.addQuestionOptionLabel,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               _buildOptions(),
-              if (_type != '判断')
+              if (_type != 'judge')
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton.icon(
                     icon: const Icon(Icons.add),
-                    label: const Text('添加选项'),
+                    label: Text(AppLocalizations.of(context)!.addOptionBtn),
                     onPressed: () {
                       setState(() {
                         _optionControllers.add(TextEditingController());
@@ -126,13 +145,18 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
               TextFormField(
                 maxLines: null,
                 initialValue: _explanation,
-                decoration: const InputDecoration(labelText: '解析'),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.analysisLabel,
+                ),
                 onSaved: (value) => _explanation = value!,
               ),
               TextFormField(
                 maxLines: null,
                 initialValue: _tags,
-                decoration: const InputDecoration(labelText: '标签 (逗号分隔)'),
+                decoration: InputDecoration(
+                  labelText:
+                      '${AppLocalizations.of(context)!.questionTagLabel} (${AppLocalizations.of(context)!.commaInfo})',
+                ),
                 onSaved: (value) => _tags = value!,
               ),
             ],
@@ -154,12 +178,17 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
               child: TextFormField(
                 maxLines: null,
                 controller: _optionControllers[index],
-                decoration: InputDecoration(labelText: '选项 ${index + 1}'),
-                validator: (value) => value!.isEmpty ? '选项不能为空' : null,
-                readOnly: _type == '判断',
+                decoration: InputDecoration(
+                  labelText:
+                      '${AppLocalizations.of(context)!.optionLabel} ${index + 1}',
+                ),
+                validator: (value) => value!.isEmpty
+                    ? '${AppLocalizations.of(context)!.optionLabel} cannot be empty'
+                    : null,
+                readOnly: _type == AppLocalizations.of(context)!.modeJudge,
               ),
             ),
-            if (_type == '单选' || _type == '判断')
+            if (_type == 'single' || _type == 'judge')
               Radio<int>(
                 value: index,
                 groupValue: _singleChoiceAnswerIndex,
@@ -169,7 +198,7 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
                   });
                 },
               ),
-            if (_type == '多选')
+            if (_type == 'multiple')
               Checkbox(
                 value: _multipleChoiceAnswers[index],
                 onChanged: (value) {
@@ -178,7 +207,7 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
                   });
                 },
               ),
-            if (_type != '判断' && _optionControllers.length > 2)
+            if (_type != 'judge' && _optionControllers.length > 2)
               IconButton(
                 icon: const Icon(Icons.remove_circle_outline),
                 onPressed: () {
@@ -198,12 +227,12 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    if (((_type == '单选' || _type == '判断') &&
+    if (((_type == 'single' || _type == 'judge') &&
             _singleChoiceAnswerIndex == null) ||
-        (_type == '多选' && !_multipleChoiceAnswers.contains(true))) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请设置答案')));
+        (_type == 'multiple' && !_multipleChoiceAnswers.contains(true))) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.setAnswerMsg)),
+      );
       return;
     }
 
@@ -211,12 +240,12 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
 
     final options = _optionControllers.map((c) => c.text).toList();
     final String answer;
-    if (_type == '单选') {
+    if (_type == 'single') {
       answer = jsonEncode(_singleChoiceAnswerIndex);
-    } else if (_type == '多选') {
+    } else if (_type == 'multiple') {
       answer = jsonEncode(_multipleChoiceAnswers);
     } else {
-      // 判断
+      // judge
       answer = jsonEncode(_singleChoiceAnswerIndex);
     }
 

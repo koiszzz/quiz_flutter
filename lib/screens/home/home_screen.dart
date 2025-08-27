@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quiz_flutter/l10n/app_localizations.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -7,18 +8,43 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('答题软件')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.appName)),
       body: GridView.count(
         crossAxisCount: 2,
         padding: const EdgeInsets.all(16.0),
         crossAxisSpacing: 16.0,
         mainAxisSpacing: 16.0,
         children: <Widget>[
-          _buildMenuCard(context, '题库管理', Icons.library_books, '/bank'),
-          _buildMenuCard(context, '答题模式', Icons.assignment, '/quiz'),
-          _buildMenuCard(context, '学习辅助', Icons.school, '/study'),
-          _buildMenuCard(context, '数据统计', Icons.bar_chart, '/stats'),
-          _buildMenuCard(context, '设置', Icons.settings, '/settings'),
+          _buildMenuCard(
+            context,
+            AppLocalizations.of(context)!.bankManage,
+            Icons.library_books,
+            '/bank',
+          ),
+          _buildMenuCard(
+            context,
+            AppLocalizations.of(context)!.mode,
+            Icons.assignment,
+            '/quiz',
+          ),
+          _buildMenuCard(
+            context,
+            AppLocalizations.of(context)!.study,
+            Icons.school,
+            '/study',
+          ),
+          _buildMenuCard(
+            context,
+            AppLocalizations.of(context)!.stats,
+            Icons.bar_chart,
+            '/stats',
+          ),
+          _buildMenuCard(
+            context,
+            AppLocalizations.of(context)!.settings,
+            Icons.settings,
+            '/settings',
+          ),
         ],
       ),
     );

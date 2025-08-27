@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quiz_flutter/l10n/app_localizations.dart';
 import 'package:quiz_flutter/models/models.dart';
 import 'package:quiz_flutter/providers/bank_list_provider.dart';
 import 'package:quiz_flutter/services/database_helper.dart';
@@ -92,9 +93,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     final questions = await DatabaseHelper.instance.getQuestionCountsByBank(
       bankId,
     );
-    _singleCount[bankId] = questions['单选'] ?? 0;
-    _multipleCount[bankId] = questions['多选'] ?? 0;
-    _trueFalseCount[bankId] = questions['判断'] ?? 0;
+    _singleCount[bankId] = questions['single'] ?? 0;
+    _multipleCount[bankId] = questions['multiple'] ?? 0;
+    _trueFalseCount[bankId] = questions['judge'] ?? 0;
 
     setState(() {
       if (mode == 'practice') {
@@ -160,14 +161,17 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
         ),
-        title: const Text('答题模式'),
+        title: Text(AppLocalizations.of(context)!.mode),
       ),
       body: bankListAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, stack) =>
+            Center(child: Text(AppLocalizations.of(context)!.loadFailMsg)),
         data: (banks) {
           if (banks.isEmpty) {
-            return const Center(child: Text('没有可用的题库，请先创建题库。'));
+            return Center(
+              child: Text(AppLocalizations.of(context)!.noBankForQuizMsg),
+            );
           }
           return ListView(
             padding: const EdgeInsets.all(16.0),
@@ -185,16 +189,16 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                 children: [
                   _buildPanel(
                     'practice',
-                    '练习模式',
-                    '按题库顺序或随机练习',
+                    AppLocalizations.of(context)!.modePratice,
+                    AppLocalizations.of(context)!.modePraticeInfo,
                     Icons.psychology_alt,
                     _isPracticeExpanded,
                     banks,
                   ),
                   _buildPanel(
                     'exam',
-                    '考试模式',
-                    '模拟真实考试，计时计分',
+                    AppLocalizations.of(context)!.modeExam,
+                    AppLocalizations.of(context)!.modeExamInfo,
                     Icons.assignment,
                     _isExamExpanded,
                     banks,
@@ -238,9 +242,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                 value: mode == 'practice'
                     ? _practiceSelectedBankId
                     : _examSelectedBankId,
-                decoration: const InputDecoration(
-                  labelText: '选择题库',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.selectBank,
+                  border: const OutlineInputBorder(),
                 ),
                 items: banks.map((bank) {
                   return DropdownMenuItem<int>(
@@ -249,12 +253,14 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                   );
                 }).toList(),
                 onChanged: (value) => _onBankSelected(value, mode),
-                validator: (value) => value == null ? '请选择一个题库' : null,
+                validator: (value) => value == null
+                    ? AppLocalizations.of(context)!.selectBank
+                    : null,
               ),
               const SizedBox(height: 16),
               _buildNumberInput(
                 mode,
-                '单选题数量',
+                '${AppLocalizations.of(context)!.modeSingle} ${AppLocalizations.of(context)!.count}',
                 mode == 'practice'
                     ? _practiceSingleController
                     : _examSingleController,
@@ -266,7 +272,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               const SizedBox(height: 16),
               _buildNumberInput(
                 mode,
-                '多选题数量',
+                '${AppLocalizations.of(context)!.modeMultiple} ${AppLocalizations.of(context)!.count}',
                 mode == 'practice'
                     ? _practiceMultipleController
                     : _examMultipleController,
@@ -278,7 +284,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               const SizedBox(height: 16),
               _buildNumberInput(
                 mode,
-                '判断题数量',
+                '${AppLocalizations.of(context)!.modeJudge} ${AppLocalizations.of(context)!.count}',
                 mode == 'practice'
                     ? _practiceTrueFalseController
                     : _examTrueFalseController,
@@ -292,25 +298,26 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                 controller: mode == 'practice'
                     ? _practiceDurationController
                     : _examDurationController,
-                decoration: const InputDecoration(
-                  labelText: '练习/考试时长 (分钟)',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText:
+                      '${AppLocalizations.of(context)!.duration} (${AppLocalizations.of(context)!.minutes})',
+                  border: const OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return '请输入时长';
+                    return 'Please enter duration';
                   }
                   if (int.tryParse(value) == 0) {
-                    return '时长不能为0';
+                    return 'Duration cannot be 0';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 16),
               SwitchListTile(
-                title: const Text('题目乱序'),
+                title: Text(AppLocalizations.of(context)!.shuffleQuestions),
                 value: mode == 'practice'
                     ? _practiceShuffleQuestions
                     : _examShuffleQuestions,
@@ -325,7 +332,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                 },
               ),
               SwitchListTile(
-                title: const Text('选项乱序'),
+                title: Text(AppLocalizations.of(context)!.shuffleOptions),
                 value: mode == 'practice'
                     ? _practiceShuffleOptions
                     : _examShuffleOptions,
@@ -341,7 +348,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               ),
               if (mode == 'practice')
                 SwitchListTile(
-                  title: const Text('不考已做过的题'),
+                  title: Text(AppLocalizations.of(context)!.noRepeatCorrect),
                   value: _practiceWithoutTaken,
                   onChanged: (value) {
                     setState(() {
@@ -352,7 +359,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => _startQuiz(mode),
-                child: const Text('开始'),
+                child: Text(AppLocalizations.of(context)!.start),
               ),
             ],
           ),
@@ -371,21 +378,21 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
-        labelText: '$label (最多: $max)',
+        labelText: '$label (${AppLocalizations.of(context)!.max}): $max)',
         border: const OutlineInputBorder(),
       ),
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return '请输入数量';
+          return 'Please enter a number';
         }
         final n = int.tryParse(value);
         if (n == null) {
-          return '请输入有效数字';
+          return 'Please enter a valid number';
         }
         if (n > max) {
-          return '不能超过题库中的题目总数 ($max)';
+          return 'Cannot exceed the total number of questions in the bank ($max)';
         }
         return null;
       },
