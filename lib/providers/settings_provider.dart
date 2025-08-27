@@ -16,14 +16,16 @@ class Settings extends _$Settings {
   Map<String, dynamic> build() {
     _loadData();
     // Return the initial state synchronously
-    return {'theme': ThemeMode.system, 'showAnswer': false};
+    return {'theme': ThemeMode.system, 'showAnswer': false, 'language': 'en'};
   }
 
   Future<void> _loadData() async {
     final prefs = await SharedPreferences.getInstance();
     final themeIndex = prefs.getInt(_themeKey) ?? ThemeMode.system.index;
     final showAnswer = prefs.getBool(_showAnswerKey) ?? false;
-    final language = prefs.getString(_languageKey) ?? Platform.localeName;
+    final language =
+        prefs.getString(_languageKey) ??
+        (Platform.localeName.startsWith('zh') ? 'zh' : 'en');
     state = {
       'theme': ThemeMode.values[themeIndex],
       'showAnswer': showAnswer,
