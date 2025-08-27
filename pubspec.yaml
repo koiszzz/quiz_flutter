@@ -1,5 +1,5 @@
 name: quiz_flutter
-description: "A new Flutter project."
+description: "A new Flutter project for quiz locally."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -111,12 +111,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
-steps:
-  - name: Clone repository
-    uses: actions/checkout@v4
-  - name: Set up Flutter
-    uses: subosito/flutter-action@v2
-    with:
-      channel: stable
-      flutter-version-file: pubspec.yaml # path to pubspec.yaml
-  - run: flutter --version

@@ -36,7 +36,7 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
   @override
   void initState() {
     super.initState();
-    _type = widget.question?.type ?? _questionTypes!.first;
+    _type = widget.question?.type ?? _questionTypes.first;
     _content = widget.question?.content ?? '';
     _explanation = widget.question?.explanation ?? '';
     _tags = widget.question?.tags ?? '';
@@ -99,7 +99,7 @@ class _AddEditQuestionScreenState extends ConsumerState<AddEditQuestionScreen> {
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.questionTypeLabel,
                 ),
-                items: _questionTypes!.map((String type) {
+                items: _questionTypes.map((String type) {
                   return DropdownMenuItem<String>(
                     value: type,
                     child: Text(AppLocalizations.of(context)!.typeLabel(type)),
