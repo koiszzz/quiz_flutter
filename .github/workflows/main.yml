@@ -24,21 +24,6 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Run tests
-        run: flutter test
-
-      - name: Build Android APK
-        run: flutter build apk --release
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk' # Specify your Flutter version
-
-      - name: Install dependencies
-        run: flutter pub get
-
       #- name: Run tests
       #  run: flutter test
 
@@ -49,4 +34,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk' # Specify your Flutter version
