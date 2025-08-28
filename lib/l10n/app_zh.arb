@@ -99,6 +99,7 @@
   "shuffleQuestions": "题目乱序",
   "shuffleOptions": "选项乱序",
   "noRepeatCorrect": "不重做答对的题",
+  "noRepeat": "不重做",
   "start": "开始",
   "submit": "提交",
   "next": "下一题",
@@ -155,5 +156,6 @@
     }
   },
   "scoreInfo": "你的成绩",
-  "examDetail": "答题详情"
+  "examDetail": "答题详情",
+  "restartByConfig": "再来一局"
 }

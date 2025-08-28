@@ -25,7 +25,7 @@ class StudyScreen extends StatelessWidget {
             Icons.assignment_late,
             () {
               context.go(
-                '/quiz/taking/wrong/0?single=10&multiple=5&trueFalse=5&duration=&shuffleQuestions=false&shuffleOptions=false',
+                '/quiz/taking/wrong/0?single=0&multiple=0&trueFalse=0&duration=&shuffleQuestions=false&shuffleOptions=false',
               );
             },
           ),
@@ -36,7 +36,7 @@ class StudyScreen extends StatelessWidget {
             Icons.favorite,
             () {
               context.go(
-                '/quiz/taking/favorites/0?single=10&multiple=5&trueFalse=5&duration=&shuffleQuestions=false&shuffleOptions=false',
+                '/quiz/taking/favorite/0?single=0&multiple=0&trueFalse=0&duration=&shuffleQuestions=false&shuffleOptions=false',
               );
             },
           ),

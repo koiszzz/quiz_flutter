@@ -397,6 +397,10 @@
   "@noRepeatCorrect": {
     "description": "Label for an option to not repeat correctly answered questions."
   },
+  "noRepeat": "No Repeat",
+  "@noRepeat": {
+    "description": "Label for an option to not repeat any questions."
+  },
   "start": "Start",
   "@start": {
     "description": "Generic 'Start' button text."
@@ -570,5 +574,9 @@
   "examDetail": "Exam Detail",
   "@examDetail": {
     "description": "Label for the exam detail screen."
+  },
+  "restartByConfig": "Try Again",
+  "@restartByConfig": {
+    "description": "Label for the option to restart the quiz based on configuration."
   }
 }

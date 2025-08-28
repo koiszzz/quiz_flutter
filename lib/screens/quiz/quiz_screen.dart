@@ -348,7 +348,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               ),
               if (mode == 'practice')
                 SwitchListTile(
-                  title: Text(AppLocalizations.of(context)!.noRepeatCorrect),
+                  title: Text(AppLocalizations.of(context)!.noRepeat),
                   value: _practiceWithoutTaken,
                   onChanged: (value) {
                     setState(() {

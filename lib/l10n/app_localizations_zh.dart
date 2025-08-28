@@ -306,6 +306,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noRepeatCorrect => '不重做答对的题';
 
   @override
+  String get noRepeat => '不重做';
+
+  @override
   String get start => '开始';
 
   @override
@@ -444,4 +447,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get examDetail => '答题详情';
+
+  @override
+  String get restartByConfig => '再来一局';
 }

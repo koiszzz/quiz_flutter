@@ -181,6 +181,11 @@ class _BankScreenState extends ConsumerState<BankScreen> {
           .map((entry) => entry.key)
           .toList();
       List<Question> questions = [];
+      final Map<String, String> typeMap = {
+        "单选": "single",
+        "多选": "multiple",
+        "判断": "judge",
+      };
       for (var i = 1; i < sheet.rows.length; i++) {
         final row = sheet.rows[i];
         if (row.every(
@@ -190,7 +195,7 @@ class _BankScreenState extends ConsumerState<BankScreen> {
         }
 
         final content = row[contentIndex]?.value?.toString() ?? '';
-        final type = row[typeIndex]?.value?.toString() ?? '';
+        final type = typeMap[row[typeIndex]?.value?.toString() ?? '单选'] ?? '';
         final rawAnswer = row[answerIndex]?.value?.toString() ?? '';
         final explanation = explanationIndex != -1
             ? row[explanationIndex]?.value?.toString() ?? ''
@@ -203,7 +208,7 @@ class _BankScreenState extends ConsumerState<BankScreen> {
         String encodedAnswer;
 
         switch (type) {
-          case '单选':
+          case 'single':
             options = optionIndices
                 .map(
                   (index) => index < row.length
@@ -216,7 +221,7 @@ class _BankScreenState extends ConsumerState<BankScreen> {
                 rawAnswer.toUpperCase().codeUnitAt(0) - 'A'.codeUnitAt(0);
             encodedAnswer = jsonEncode(answerOptionIndex);
             break;
-          case '多选':
+          case 'multiple':
             options = optionIndices
                 .map(
                   (index) => index < row.length
@@ -238,7 +243,7 @@ class _BankScreenState extends ConsumerState<BankScreen> {
             }
             encodedAnswer = jsonEncode(answers);
             break;
-          case '判断':
+          case 'judge':
             options = [
               // ignore: use_build_context_synchronously
               AppLocalizations.of(context)!.trueStr,
@@ -273,16 +278,6 @@ class _BankScreenState extends ConsumerState<BankScreen> {
         );
       }
       await ref.read(bankListProvider.notifier).addQuestions(questions);
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.importWaitingMsg),
-            ),
-          );
-      }
     } finally {
       if (context.mounted) {
         Navigator.of(context).pop();

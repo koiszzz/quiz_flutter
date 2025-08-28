@@ -378,10 +378,17 @@ class QuizTakingScreen extends ConsumerWidget {
             },
             child: Text(AppLocalizations.of(context)!.viewWrongQuestionBtn),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () => context.go('/'),
             child: Text(AppLocalizations.of(context)!.backToHomeBtn),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () => context.replace(
+              ref.read(quizProvider(config).notifier).getConfigUrl(),
+            ),
+            child: Text(AppLocalizations.of(context)!.restartByConfig),
           ),
         ],
       ),

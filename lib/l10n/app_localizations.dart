@@ -692,6 +692,12 @@ abstract class AppLocalizations {
   /// **'No Repeat Correct'**
   String get noRepeatCorrect;
 
+  /// Label for an option to not repeat any questions.
+  ///
+  /// In en, this message translates to:
+  /// **'No Repeat'**
+  String get noRepeat;
+
   /// Generic 'Start' button text.
   ///
   /// In en, this message translates to:
@@ -937,6 +943,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exam Detail'**
   String get examDetail;
+
+  /// Label for the option to restart the quiz based on configuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get restartByConfig;
 }
 
 class _AppLocalizationsDelegate

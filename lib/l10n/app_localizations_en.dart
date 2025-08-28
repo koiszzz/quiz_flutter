@@ -309,6 +309,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noRepeatCorrect => 'No Repeat Correct';
 
   @override
+  String get noRepeat => 'No Repeat';
+
+  @override
   String get start => 'Start';
 
   @override
@@ -447,4 +450,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get examDetail => 'Exam Detail';
+
+  @override
+  String get restartByConfig => 'Try Again';
 }

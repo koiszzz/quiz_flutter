@@ -102,7 +102,7 @@ class Quiz extends _$Quiz {
       questions: questions,
       showAnswer: config.mode == 'practice'
           ? systemSettings['showAnswer']
-          : false,
+          : (config.mode == 'wrong' || config.mode == 'favorite'),
       startTime: DateTime.now(),
       remainingTime: Duration(minutes: config.duration),
       quizConfig: config,
@@ -123,7 +123,7 @@ class Quiz extends _$Quiz {
   Future<List<Question>> _loadQuestions(QuizConfig config) async {
     final List<Question> allQuestions = await _dbHelper.getQuestionsByBank(
       bankId: config.bankId!,
-      withFavorites: config.mode == 'favorites',
+      withFavorites: config.mode == 'favorite',
       onlyFailed: config.mode == 'wrong',
       withoutTaken: config.withoutTaken,
     );
@@ -147,9 +147,13 @@ class Quiz extends _$Quiz {
     }
 
     final selectedQuestions = [
-      ...single.take(config.single),
-      ...multiple.take(config.multiple),
-      ...trueFalse.take(config.trueFalse),
+      ...single.take(config.single == 0 ? single.length : config.single),
+      ...multiple.take(
+        config.multiple == 0 ? multiple.length : config.multiple,
+      ),
+      ...trueFalse.take(
+        config.trueFalse == 0 ? trueFalse.length : config.trueFalse,
+      ),
     ];
     if (config.shuffleOptions) {
       final List<Question> shuffleds = [];
@@ -364,5 +368,11 @@ class Quiz extends _$Quiz {
       }
     }
     return correctCount;
+  }
+
+  String getConfigUrl() {
+    final currentState = state.value;
+    final config = currentState!.quizConfig;
+    return '/quiz/taking/${config.mode}/${config.bankId}?single=${config.single}&multiple=${config.multiple}&trueFalse=${config.trueFalse}&duration=${config.duration}&shuffleQuestions=${config.shuffleQuestions}&shuffleOptions=${config.shuffleOptions}&withoutTaken=${config.withoutTaken}';
   }
 }
