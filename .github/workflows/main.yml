@@ -33,8 +33,30 @@ jobs:
       - name: Build Android APK
         run: flutter build apk --release
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      #- name: Upload APK
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: app-release-apk
+      #    path: build/app/outputs/flutter-apk/app-release.apk # Specify your Flutter version
+
+      # 步骤6: 创建一个唯一的发布标签名称
+      # 使用当前日期和时间作为标签，确保唯一性
+      - name: Set release tag name
+        id: tag
+        run: echo "TAG_NAME=v$(date +'%Y.%m.%d-%H%M%S')" >> $GITHUB_ENV
+
+      # 步骤7: 创建 GitHub Release 并上传 APK
+      # 使用 softprops/action-gh-release@v2 来完成发布
+      - name: Create GitHub Release and Upload APK
+        uses: softprops/action-gh-release@v2
         with:
-          name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk # Specify your Flutter version
+          # 使用上一步生成的标签名
+          tag_name: ${{ env.TAG_NAME }}
+          # Release 的标题
+          release_name: "Release ${{ env.TAG_NAME }}"
+          # Release 的内容，这里使用了最新的 commit 消息
+          body: "Automated release based on commit: ${{ github.event.head_commit.message }}"
+          # 要上传的文件列表，路径是 Flutter 构建 APK 的默认输出路径
+          files: build/app/outputs/flutter-apk/app-release.apk
+          # GITHUB_TOKEN 是 GitHub Actions 自动提供的，用于授权
+          # 这个 token 拥有创建 Release 的权限 (因为我们在文件顶部设置了 permissions)
