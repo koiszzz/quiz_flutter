@@ -43,7 +43,7 @@ jobs:
       # 使用当前日期和时间作为标签，确保唯一性
       - name: Set release tag name
         id: tag
-        run: echo "TAG_NAME=v$(date +'%Y.%m.%d-%H%M%S')" >> $GITHUB_ENV
+        run: echo "::set-output name=TAG_NAME::v$(date +'%Y.%m.%d-%H%M%S')"
 
       # 步骤7: 创建 GitHub Release 并上传 APK
       # 使用 softprops/action-gh-release@v2 来完成发布
@@ -51,9 +51,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           # 使用上一步生成的标签名
-          tag_name: ${{ env.TAG_NAME }}
+          tag_name: ${{ steps.tag.outputs.TAG_NAME }}
           # Release 的标题
-          release_name: "Release ${{ env.TAG_NAME }}"
+          release_name: "Release ${{ steps.tag.outputs.TAG_NAME }}"
           # Release 的内容，这里使用了最新的 commit 消息
           body: "Automated release based on commit: ${{ github.event.head_commit.message }}"
           # 要上传的文件列表，路径是 Flutter 构建 APK 的默认输出路径
