@@ -453,4 +453,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restartByConfig => 'Try Again';
+
+  @override
+  String get questionList => 'Question List';
 }

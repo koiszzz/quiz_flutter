@@ -46,7 +46,7 @@ final class QuizProvider extends $AsyncNotifierProvider<Quiz, QuizState> {
   }
 }
 
-String _$quizHash() => r'1e8ec7b45c588f083b6b9af4416386546c661cec';
+String _$quizHash() => r'41d8a0f660fde3a942601ad53dab6a3ea928093b';
 
 final class QuizFamily extends $Family
     with

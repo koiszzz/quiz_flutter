@@ -157,5 +157,6 @@
   },
   "scoreInfo": "你的成绩",
   "examDetail": "答题详情",
-  "restartByConfig": "再来一局"
+  "restartByConfig": "再来一局",
+  "questionList": "题目列表"
 }

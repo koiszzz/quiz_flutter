@@ -949,6 +949,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try Again'**
   String get restartByConfig;
+
+  /// Label for the question list.
+  ///
+  /// In en, this message translates to:
+  /// **'Question List'**
+  String get questionList;
 }
 
 class _AppLocalizationsDelegate

@@ -240,6 +240,26 @@ class Quiz extends _$Quiz {
     }
   }
 
+  Future<void> resetWrongTimes() async {
+    final currentQuestion = state.value?.currentQuestion;
+    if (currentQuestion != null) {
+      state = AsyncValue.data(
+        state.value!.copyWith(
+          currentIndex:
+              state.value!.currentIndex >= state.value!.questions.length - 1
+              ? 0
+              : state.value!.currentIndex,
+          questions: state.value!.questions.where((question) {
+            return question.id != currentQuestion.id;
+          }).toList(),
+        ),
+      );
+      await _dbHelper.updateQuestion(
+        currentQuestion.copyWith(uncorrectTimes: 0),
+      );
+    }
+  }
+
   void toggleShowAnswer() {
     state = AsyncValue.data(
       state.value!.copyWith(showAnswer: !state.value!.showAnswer),

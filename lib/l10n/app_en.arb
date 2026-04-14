@@ -578,5 +578,9 @@
   "restartByConfig": "Try Again",
   "@restartByConfig": {
     "description": "Label for the option to restart the quiz based on configuration."
+  },
+  "questionList": "Question List",
+  "@questionList": {
+    "description": "Label for the question list."
   }
 }

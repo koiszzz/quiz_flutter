@@ -450,4 +450,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get restartByConfig => '再来一局';
+
+  @override
+  String get questionList => '题目列表';
 }

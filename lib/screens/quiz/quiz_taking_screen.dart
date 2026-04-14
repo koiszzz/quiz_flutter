@@ -61,6 +61,16 @@ class QuizTakingScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
+                    if (config.mode == 'wrong' &&
+                        value.currentQuestion!.uncorrectTimes > 0)
+                      IconButton(
+                        onPressed: () {
+                          ref
+                              .read(quizProvider(config).notifier)
+                              .resetWrongTimes();
+                        },
+                        icon: const Icon(Icons.close),
+                      ),
                     value.currentQuestion != null && !value.quizFinished
                         ? IconButton(
                             icon: Icon(
@@ -103,38 +113,59 @@ class QuizTakingScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return GridView.builder(
-          padding: const EdgeInsets.all(16.0),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 5,
-            childAspectRatio: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-          ),
-          itemCount: provider.questions.length,
-          itemBuilder: (context, index) {
-            final question = provider.questions[index];
-            final isAnswered = provider.userAnswers.containsKey(question.id);
-            return ElevatedButton(
-              onPressed: () {
-                ref.read(quizProvider(config).notifier).goToQuestion(index);
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(1.0),
-                ),
-                backgroundColor: isAnswered
-                    ? Colors.green[200]
-                    : Colors.red[300],
-                foregroundColor: Colors.white,
-              ),
+        return Column(
+          children: [
+            const SizedBox(height: 12),
+            Center(
               child: Text(
-                '${index + 1}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                AppLocalizations.of(context)!.questionList,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-            );
-          },
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: GridView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 5,
+                  childAspectRatio: 2.1,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemCount: provider.questions.length,
+                itemBuilder: (context, index) {
+                  final question = provider.questions[index];
+                  final isAnswered = provider.userAnswers.containsKey(
+                    question.id,
+                  );
+                  return ElevatedButton(
+                    onPressed: () {
+                      ref
+                          .read(quizProvider(config).notifier)
+                          .goToQuestion(index);
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(1.0),
+                      ),
+                      backgroundColor: isAnswered
+                          ? Colors.green[200]
+                          : Colors.red[300],
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: Text(
+                      '${index + 1}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      softWrap: false,
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
         );
       },
     );
